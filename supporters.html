@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nasi Darczyńcy - Vorexan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 3rem 0;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            text-decoration: none;
+            margin-top: 2rem;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .supporters-list {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .supporter-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: all 0.3s;
+        }
+        
+        .supporter-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+        }
+        
+        .supporter-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        .supporter-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .supporter-meta {
+            display: flex;
+            gap: 1rem;
+            color: #b0b0b0;
+            font-size: 0.9rem;
+        }
+        
+        .supporter-amount {
+            color: #00c853;
+            font-weight: bold;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #888;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤝 Nasi Darczyńcy</h1>
+            <p>Lista osób które wsparły rozwój projektu Vorexan</p>
+            <a href="/" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Wróć do strony głównej
+            </a>
+        </header>
+        
+        <div class="supporters-list" id="supportersList">
+            <!-- Supporters will be loaded dynamically -->
+            <div class="empty-state">
+                <i class="fas fa-users"></i>
+                <h3>Brak darczyńców do wyświetlenia</h3>
+                <p>Bądź pierwszy który się tutaj pojawi!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Przykładowi darczyńcy (w praktyce pobierasz z API)
+        const supporters = [
+            { name: "Anonimowy", amount: 50, service: "Plugin Minecraft", date: "2024-01-15" },
+            { name: "MinecraftFan", amount: 30, service: "Skrypty", date: "2024-01-10" },
+            { name: "DevHelper", amount: 100, service: "Strona WWW", date: "2024-01-05" },
+            { name: "StreamerPL", amount: 60, service: "Montaż wideo", date: "2023-12-20" }
+        ];
+        
+        function loadSupporters() {
+            const container = document.getElementById('supportersList');
+            
+            if (supporters.length === 0) {
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            supporters.forEach(supporter => {
+                const firstLetter = supporter.name.charAt(0).toUpperCase();
+                const card = document.createElement('div');
+                card.className = 'supporter-card';
+                card.innerHTML = `
+                    <div class="supporter-avatar">${firstLetter}</div>
+                    <div class="supporter-info">
+                        <h3>${supporter.name}</h3>
+                        <div class="supporter-meta">
+                            <span class="supporter-amount">${supporter.amount} zł</span>
+                            <span>${supporter.service}</span>
+                            <span>${supporter.date}</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+        
+        // W rzeczywistości pobierasz dane z API
+        // fetch('/api/supporters').then(...)
+        
+        document.addEventListener('DOMContentLoaded', loadSupporters);
+    </script>
+</body>
+</html>
