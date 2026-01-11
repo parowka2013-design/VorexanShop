@@ -1,72 +1,130 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Zamówienia Sprzedawcy</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Panel Sprzedawcy – Zamówienia</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="seller-container">
+<h1>📦 Panel Sprzedawcy</h1>
 
-  <!-- MENU BOCZNE -->
-  <aside class="seller-sidebar">
-    <h2>Panel Sprzedawcy</h2>
-    <button onclick="window.location.href='index.html'">🏠 Dashboard</button>
-    <button onclick="window.location.href='orders.html'">📝 Zamówienia</button>
-    <button onclick="window.location.href='chat.html'">💬 Chat</button>
-    <button onclick="window.location.href='settings.html'">⚙ Ustawienia</button>
-    <button onclick="logoutSeller()">🚪 Wyloguj</button>
-  </aside>
-
-  <main class="seller-main">
-    <h2>Lista zamówień</h2>
-    <div id="ordersList"></div>
-  </main>
+<div id="auth">
+  <h2>🔐 Logowanie</h2>
+  <input type="email" id="adminEmail" placeholder="Email">
+  <input type="password" id="adminPass" placeholder="Hasło">
+  <button onclick="loginAdmin()">Zaloguj</button>
+  <p id="loginStatus"></p>
 </div>
 
-<script>
-function logoutSeller() {
-  location.href = "index.html";
-}
+<div id="ordersSection" style="display:none;">
+  <button onclick="logoutAdmin()">Wyloguj</button>
+  <h2>Lista Zamówień</h2>
+  <div id="ordersList"></div>
+</div>
 
-// Ładowanie zamówień
-function loadOrders() {
-  const orders = JSON.parse(localStorage.getItem("orders")) || [];
-  const users = JSON.parse(localStorage.getItem("users")) || [];
-  const ordersList = document.getElementById("ordersList");
-  ordersList.innerHTML = "";
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+  doc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  if(orders.length === 0) {
-    ordersList.innerHTML = "<p>Brak zamówień.</p>";
-    return;
+const firebaseConfig = {
+  apiKey: "AIzaSyBSV9Pnlqa038C-6RM6kU_-YCP7wSfRxk4",
+  authDomain: "vorexanshop.firebaseapp.com",
+  projectId: "vorexanshop",
+  storageBucket: "vorexanshop.appspot.com",
+  messagingSenderId: "902150803176",
+  appId: "1:902150803176:web:ca92a610675e671532835d"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const authDiv = document.getElementById("auth");
+const ordersSection = document.getElementById("ordersSection");
+const ordersContainer = document.getElementById("ordersList");
+const loginStatus = document.getElementById("loginStatus");
+
+onAuthStateChanged(auth, user => {
+  if (user) {
+    authDiv.style.display = "none";
+    ordersSection.style.display = "block";
+    loadOrders();
+  } else {
+    authDiv.style.display = "block";
+    ordersSection.style.display = "none";
   }
+});
 
-  orders.forEach(order => {
-    const div = document.createElement("div");
-    div.className = "card";
+window.loginAdmin = async function() {
+  const email = document.getElementById("adminEmail").value;
+  const pass = document.getElementById("adminPass").value;
 
-    div.innerHTML = `
-      <b>Email:</b> ${order.email} <br>
-      <b>Data:</b> ${order.date} <br>
-      <b>Produkty:</b> ${order.items.map(i=>i.name).join(", ")} <br>
-      <button onclick="checkClient('${order.email}')">Szczegóły klienta</button>
-    `;
-    ordersList.appendChild(div);
+  if (!email || !pass) return alert("Uzupełnij dane");
+
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+    loginStatus.textContent = "Zalogowano jako: " + email;
+  } catch (e) {
+    alert("Błąd logowania: " + e.message);
+  }
+};
+
+window.logoutAdmin = async function() {
+  await signOut(auth);
+  loginStatus.textContent = "Wylogowano";
+};
+
+/* =========================
+   LISTA ZAMÓWIEŃ
+========================= */
+function loadOrders() {
+  const ordersRef = collection(db, "orders");
+  const q = query(ordersRef, orderBy("date", "desc"));
+
+  onSnapshot(q, snapshot => {
+    ordersContainer.innerHTML = "";
+    snapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      const div = document.createElement("div");
+      div.className = "orderCard";
+      
+      const items = data.items.map(i => i.name + " (" + i.price + " zł)").join(", ");
+      
+      div.innerHTML = `
+        <b>Email:</b> ${data.email} <br>
+        <b>Data:</b> ${new Date(data.date).toLocaleString()} <br>
+        <b>Produkty:</b> ${items} <br>
+        <label>
+          <input type="checkbox" ${data.done ? "checked" : ""} class="doneCheckbox"> Gotowe
+        </label>
+      `;
+
+      const checkbox = div.querySelector(".doneCheckbox");
+      checkbox.addEventListener("change", async () => {
+        await updateDoc(doc(db, "orders", docSnap.id), {
+          done: checkbox.checked
+        });
+      });
+
+      ordersContainer.appendChild(div);
+    });
   });
 }
-
-// Weryfikacja klienta po emailu
-function checkClient(email) {
-  const users = JSON.parse(localStorage.getItem("users")) || [];
-  const client = users.find(u=>u.email===email);
-  if(!client) return alert("Nie znaleziono takiego klienta!");
-  alert(`Dane klienta:\nEmail: ${client.email}\nHasło: ${client.pass}`);
-}
-
-// Inicjalizacja
-loadOrders();
 </script>
 
 </body>
