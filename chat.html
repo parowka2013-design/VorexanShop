@@ -3,28 +3,42 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chat z Vorexan</title>
-<link rel="stylesheet" href="chat-style.css">
+<title>Chat Sprzedawcy</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header>
-  <h2>💬 Chat z Vorexan</h2>
-  <button onclick="closeChat()">❌ Zamknij</button>
-</header>
+<div class="seller-container">
 
-<div id="chatWindow" class="chat-window"></div>
+  <!-- MENU BOCZNE -->
+  <aside class="seller-sidebar">
+    <h2>Panel Sprzedawcy</h2>
+    <button onclick="window.location.href='index.html'">🏠 Dashboard</button>
+    <button onclick="window.location.href='orders.html'">📝 Zamówienia</button>
+    <button onclick="window.location.href='chat.html'">💬 Chat</button>
+    <button onclick="window.location.href='settings.html'">⚙ Ustawienia</button>
+    <button onclick="logoutSeller()">🚪 Wyloguj</button>
+  </aside>
 
-<div class="chat-input">
-  <input id="chatMessage" placeholder="Napisz wiadomość...">
-  <button onclick="sendMessage()">Wyślij</button>
+  <!-- GŁÓWNY CHAT -->
+  <main class="seller-main">
+    <h2>Chat z klientami</h2>
+
+    <!-- Lista klientów -->
+    <div id="sellerChatList" style="margin-bottom:10px;"></div>
+
+    <!-- Okno czatu -->
+    <div id="sellerChatWindow" class="chat-window"></div>
+
+    <!-- Wpisywanie wiadomości -->
+    <div class="chat-input">
+      <input id="sellerChatMessage" placeholder="Napisz wiadomość...">
+      <button onclick="sendSellerMessage()">Wyślij</button>
+    </div>
+  </main>
 </div>
 
-<script src="chat.js"></script>
-<script>
-function closeChat() {
-  window.close(); // albo ukrycie okna w index.html
-}
-</script>
+<script src="sellerChat.js"></script>
+
 </body>
 </html>

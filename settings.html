@@ -3,28 +3,57 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ustawienia konta</title>
+<title>Ustawienia Sprzedawcy</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header class="hero">
-  <h1>Ustawienia konta</h1>
-</header>
+<div class="seller-container">
 
-<main>
-  <section id="settingsSection">
-    <input id="emailInput" type="email" placeholder="Email">
-    <input id="displayNameInput" type="text" placeholder="Nazwa konta">
-    <input id="passwordInput" type="password" placeholder="Nowe hasło">
-    <input id="passwordConfirmInput" type="password" placeholder="Powtórz hasło">
-    <button onclick="saveSettings()">Zapisz</button>
-    <button onclick="logout()">Wyloguj</button>
-    <button onclick="goBack()">Powrót</button>
-    <p id="statusMsg"></p>
-  </section>
-</main>
+  <!-- MENU BOCZNE -->
+  <aside class="seller-sidebar">
+    <h2>Panel Sprzedawcy</h2>
+    <button onclick="window.location.href='index.html'">🏠 Dashboard</button>
+    <button onclick="window.location.href='orders.html'">📝 Zamówienia</button>
+    <button onclick="window.location.href='chat.html'">💬 Chat</button>
+    <button onclick="window.location.href='settings.html'">⚙ Ustawienia</button>
+    <button onclick="logoutSeller()">🚪 Wyloguj</button>
+  </aside>
 
-<script src="settings.js"></script>
+  <main class="seller-main">
+    <section>
+      <h2>Ustawienia konta sprzedawcy</h2>
+      <p>Aktualne hasło zapisane w systemie: <span id="currentPass"></span></p>
+
+      <input id="newSellerPass" type="password" placeholder="Nowe hasło">
+      <button onclick="changeSellerPassword()">Zmień hasło</button>
+    </section>
+  </main>
+
+</div>
+
+<script>
+const sellerPasswordKey = "sellerPass";
+
+window.onload = function() {
+  const current = localStorage.getItem(sellerPasswordKey) || "admin123";
+  document.getElementById("currentPass").textContent = current;
+};
+
+function changeSellerPassword() {
+  const newPass = document.getElementById("newSellerPass").value.trim();
+  if(!newPass) return alert("Podaj nowe hasło");
+
+  localStorage.setItem(sellerPasswordKey, newPass);
+  document.getElementById("currentPass").textContent = newPass;
+  document.getElementById("newSellerPass").value = "";
+  alert("Hasło sprzedawcy zmienione!");
+}
+
+function logoutSeller() {
+  location.href = "index.html";
+}
+</script>
+
 </body>
 </html>

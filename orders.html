@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zamówienia Sprzedawcy</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="seller-container">
+
+  <!-- MENU BOCZNE -->
+  <aside class="seller-sidebar">
+    <h2>Panel Sprzedawcy</h2>
+    <button onclick="window.location.href='index.html'">🏠 Dashboard</button>
+    <button onclick="window.location.href='orders.html'">📝 Zamówienia</button>
+    <button onclick="window.location.href='chat.html'">💬 Chat</button>
+    <button onclick="window.location.href='settings.html'">⚙ Ustawienia</button>
+    <button onclick="logoutSeller()">🚪 Wyloguj</button>
+  </aside>
+
+  <main class="seller-main">
+    <h2>Lista zamówień</h2>
+    <div id="ordersList"></div>
+  </main>
+</div>
+
+<script>
+function logoutSeller() {
+  location.href = "index.html";
+}
+
+// Ładowanie zamówień
+function loadOrders() {
+  const orders = JSON.parse(localStorage.getItem("orders")) || [];
+  const users = JSON.parse(localStorage.getItem("users")) || [];
+  const ordersList = document.getElementById("ordersList");
+  ordersList.innerHTML = "";
+
+  if(orders.length === 0) {
+    ordersList.innerHTML = "<p>Brak zamówień.</p>";
+    return;
+  }
+
+  orders.forEach(order => {
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <b>Email:</b> ${order.email} <br>
+      <b>Data:</b> ${order.date} <br>
+      <b>Produkty:</b> ${order.items.map(i=>i.name).join(", ")} <br>
+      <button onclick="checkClient('${order.email}')">Szczegóły klienta</button>
+    `;
+    ordersList.appendChild(div);
+  });
+}
+
+// Weryfikacja klienta po emailu
+function checkClient(email) {
+  const users = JSON.parse(localStorage.getItem("users")) || [];
+  const client = users.find(u=>u.email===email);
+  if(!client) return alert("Nie znaleziono takiego klienta!");
+  alert(`Dane klienta:\nEmail: ${client.email}\nHasło: ${client.pass}`);
+}
+
+// Inicjalizacja
+loadOrders();
+</script>
+
+</body>
+</html>
