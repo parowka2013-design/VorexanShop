@@ -3,94 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vorexan | Sklep</title>
+  <title>Vorexan Shop</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header class="hero">
-  <h1>Vorexan</h1>
-  <p>Game Dev • Programista • Minecraft Dev</p>
-  <div class="top-buttons">
-    <button onclick="toggleCart()">🛒 Koszyk</button>
-    <button onclick="window.location.href='settings.html'" id="accountBtn">Konto</button>
+  <h1>Vorexan Shop</h1>
+  <p>Game Dev • Minecraft Dev • Projekty</p>
+  <div id="accountSection">
+    <button id="logoutBtn" onclick="logout()">Wyloguj</button>
   </div>
+  <button onclick="toggleCart()">🛒 Koszyk</button>
 </header>
 
 <main>
-  <!-- Logowanie / Rejestracja -->
+  <!-- Sekcja logowania/rejestracji -->
   <section id="auth">
     <h2>🔐 Logowanie / Rejestracja</h2>
     <input id="authEmail" type="email" placeholder="Email">
     <input id="authPass" type="password" placeholder="Hasło">
-    <input id="authName" type="text" placeholder="Nazwa konta (tylko przy rejestracji)">
-    <button onclick="login()">Zaloguj</button>
-    <button onclick="register()">Zarejestruj</button>
+    <input id="authName" type="text" placeholder="Nazwa użytkownika">
+    <div>
+      <button onclick="login()">Zaloguj</button>
+      <button onclick="register()">Zarejestruj</button>
+    </div>
     <p id="authStatus"></p>
   </section>
 
-  <!-- Produkty -->
+  <!-- Sekcja produktów -->
   <section>
     <h2>🛍️ Oferta</h2>
-    <div class="projects">
-      <!-- Plugin Minecraft -->
+    <div class="products">
       <div class="card">
-        <img src="images/plugin.jpg" alt="Plugin Minecraft">
+        <img src="images/plugin.png" alt="Plugin Minecraft">
         <h3>Plugin Minecraft</h3>
-        <p>Custom plugin (GUI, prace)</p>
+        <p>Custom plugin (GUI, eventy)</p>
         <b>50 zł</b>
-        <button class="buy-btn" onclick="addToCart('Plugin Minecraft',50)">Dodaj</button>
+        <button onclick="addToCart('Plugin Minecraft',50)">Dodaj do koszyka</button>
       </div>
 
-      <!-- Skrypty Skript -->
       <div class="card">
-        <img src="images/skript.jpg" alt="Skrypty Skript">
+        <img src="images/skrypt.png" alt="Skrypty Skript">
         <h3>Skrypty Skript</h3>
         <p>Rangi, eventy</p>
         <b>30 zł</b>
-        <button class="buy-btn" onclick="addToCart('Skrypty Skript',30)">Dodaj</button>
+        <button onclick="addToCart('Skrypty Skript',30)">Dodaj do koszyka</button>
       </div>
 
-      <!-- Strona WWW -->
       <div class="card">
-        <img src="images/strona.jpg" alt="Strona WWW">
+        <img src="images/strona.png" alt="Strona WWW">
         <h3>Strona WWW</h3>
         <p>Portfolio / sklep</p>
         <b>90 zł</b>
-        <button class="buy-btn" onclick="addToCart('Strona WWW',90)">Dodaj</button>
+        <button onclick="addToCart('Strona WWW',90)">Dodaj do koszyka</button>
       </div>
 
-      <!-- Montaż wideo -->
       <div class="card">
-        <img src="images/montaz.jpg" alt="Montaż wideo">
-        <h3>Montaż wideo</h3>
-        <p>1 sekunda = 0,01 zł, minimalnie 1 minuta</p>
-        <b>od 0,60 zł</b>
-        <button class="buy-btn" onclick="addToCart('Montaż wideo',1)">Dodaj</button>
+        <img src="images/montaz.png" alt="Montaż filmu">
+        <h3>Montaż filmu</h3>
+        <p>1 sekunda = 1 grosz, minimalnie 1 minuta</p>
+        <b>Cena zależna od czasu</b>
+        <button onclick="addToCart('Montaż filmu',1)">Dodaj do koszyka</button>
       </div>
 
-      <!-- Gotowa gra -->
       <div class="card">
-        <img src="images/gra.jpg" alt="Gotowa gra">
-        <h3>Gotowa własna gra</h3>
-        <p>1 miesiąc pracy, cena 100-150 zł</p>
+        <img src="images/gra.png" alt="Gotowa gra">
+        <h3>Gotowa gra</h3>
+        <p>Własna gra w miesiąc (100-150 zł)</p>
         <b>100-150 zł</b>
-        <button class="buy-btn" onclick="addToCart('Gotowa gra',100)">Dodaj</button>
-      </div>
-
-      <!-- Inna usługa -->
-      <div class="card">
-        <img src="images/inna_usluga.jpg" alt="Inna usługa">
-        <h3>Inna usługa</h3>
-        <p>Opcjonalna usługa na zamówienie</p>
-        <b>Cena zależna</b>
-        <button class="buy-btn" onclick="addToCart('Inna usługa',50)">Dodaj</button>
+        <button onclick="addToCart('Gotowa gra',100)">Dodaj do koszyka</button>
       </div>
     </div>
   </section>
 </main>
 
-<!-- Koszyk -->
+<!-- KOSZYK -->
 <div id="cart">
   <h2>Koszyk</h2>
   <div id="cartItems"></div>
@@ -99,6 +87,8 @@
   <button onclick="toggleCart()">Zamknij</button>
 </div>
 
-<script src="script.js"></script>
+<!-- Skrypt -->
+<script type="module" src="script.js"></script>
+
 </body>
 </html>

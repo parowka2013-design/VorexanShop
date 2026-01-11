@@ -1,69 +1,160 @@
-let users = JSON.parse(localStorage.getItem("users")) || [];
-let user = JSON.parse(localStorage.getItem("user"));
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
+// script.js
+// UWAGA: Plik musi być ładowany jako <script type="module" src="script.js"></script>
+
+// Importy modułowe Firebase v9
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  signOut, 
+  onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { 
+  getFirestore, 
+  doc, 
+  setDoc, 
+  getDoc, 
+  collection, 
+  addDoc, 
+  updateDoc 
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+// Konfiguracja Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyBSV9Pnlqa038C-6RM6kU_-YCP7wSfRxk4",
+  authDomain: "vorexanshop.firebaseapp.com",
+  projectId: "vorexanshop",
+  storageBucket: "vorexanshop.firebasestorage.app",
+  messagingSenderId: "902150803176",
+  appId: "1:902150803176:web:ca92a610675e671532835d"
+};
+
+// Inicjalizacja Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ELEMENTY
+const authSection = document.getElementById("auth");
+const authStatus = document.getElementById("authStatus");
 const cartEl = document.getElementById("cartItems");
 const totalEl = document.getElementById("total");
 
-// Logowanie
-function login() {
-    const email = document.getElementById("authEmail").value.trim();
-    const pass = document.getElementById("authPass").value.trim();
-    const status = document.getElementById("authStatus");
-    if (!email || !pass) { status.textContent="Uzupełnij dane!"; status.style.color="red"; return; }
-    const foundUser = users.find(u => u.email===email && u.password===pass);
-    if(foundUser){ user=foundUser; localStorage.setItem("user",JSON.stringify(user)); status.textContent="Zalogowano!"; status.style.color="lime"; setTimeout(()=>location.reload(),800);}
-    else { status.textContent="Niepoprawny email lub hasło!"; status.style.color="red";}
+// REJESTRACJA
+export async function register() {
+  const email = document.getElementById("authEmail").value.trim();
+  const pass = document.getElementById("authPass").value.trim();
+  const name = document.getElementById("authName").value.trim();
+
+  if (!email || !pass || !name) {
+    authStatus.textContent = "Uzupełnij wszystkie pola!";
+    authStatus.style.color = "red";
+    return;
+  }
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+    const uid = userCredential.user.uid;
+    await setDoc(doc(db, "users", uid), { displayName: name, email });
+    authStatus.textContent = "Konto utworzone!";
+    authStatus.style.color = "lime";
+    location.reload();
+  } catch(err) {
+    authStatus.textContent = err.message;
+    authStatus.style.color = "red";
+  }
 }
 
-// Rejestracja
-function register() {
-    const email = document.getElementById("authEmail").value.trim();
-    const pass = document.getElementById("authPass").value.trim();
-    const name = document.getElementById("authName").value.trim();
-    const status = document.getElementById("authStatus");
-    if(!email || !pass || !name){ status.textContent="Uzupełnij wszystkie pola!"; status.style.color="red"; return; }
-    if(users.find(u=>u.email===email)){ status.textContent="Konto z tym emailem już istnieje!"; status.style.color="red"; return; }
-    const newUser={ email, password:pass, displayName:name };
-    users.push(newUser);
-    localStorage.setItem("users",JSON.stringify(users));
-    user=newUser;
-    localStorage.setItem("user",JSON.stringify(user));
-    status.textContent="Konto utworzone i zalogowano!"; status.style.color="lime"; setTimeout(()=>location.reload(),800);
+// LOGOWANIE
+export async function login() {
+  const email = document.getElementById("authEmail").value.trim();
+  const pass = document.getElementById("authPass").value.trim();
+
+  if (!email || !pass) {
+    authStatus.textContent = "Uzupełnij dane!";
+    authStatus.style.color = "red";
+    return;
+  }
+
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+    authStatus.textContent = "Zalogowano!";
+    authStatus.style.color = "lime";
+    location.reload();
+  } catch(err) {
+    authStatus.textContent = err.message;
+    authStatus.style.color = "red";
+  }
 }
 
-// Wylogowanie
-function logout(){ localStorage.removeItem("user"); user=null; location.reload(); }
-
-// Ukrywanie logowania jeśli zalogowany
-window.onload = () => { 
-    const authSection=document.getElementById("auth"); 
-    if(user) authSection.style.display="none"; else authSection.style.display="block"; 
+// WYLOGOWANIE
+export function logout() {
+  signOut(auth).then(() => location.reload());
 }
 
-// Koszyk
-function toggleCart(){ document.getElementById("cart").classList.toggle("active"); renderCart(); }
+// OBSERWOWANIE STANU ZALOGOWANIA
+onAuthStateChanged(auth, user => {
+  if(user) {
+    if(authSection) authSection.style.display = "none";
+    renderCart();
+  } else {
+    if(authSection) authSection.style.display = "block";
+    if(cartEl) cartEl.innerHTML = "";
+    if(totalEl) totalEl.textContent = "0";
+  }
+});
 
-function addToCart(name, price){
-    if(!user) return alert("Musisz się zalogować, aby dodać do koszyka!");
-    cart.push({name,price});
-    localStorage.setItem("cart",JSON.stringify(cart));
-    alert("Dodano do koszyka");
+// KOSZYK
+export async function addToCart(name, price) {
+  const user = auth.currentUser;
+  if(!user) return alert("Musisz się zalogować, aby dodać do koszyka!");
+
+  const cartRef = doc(db, "carts", user.uid);
+  const cartSnap = await getDoc(cartRef);
+
+  let cart = cartSnap.exists() ? cartSnap.data().items : [];
+  cart.push({ name, price });
+  await setDoc(cartRef, { items: cart });
+  alert("Dodano do koszyka!");
+  renderCart();
 }
 
-function renderCart(){
-    cartEl.innerHTML="";
-    let total=0;
-    cart.forEach(item => { total+=item.price; cartEl.innerHTML+=`<div class="cart-item">${item.name} – ${item.price} zł</div>`; });
-    totalEl.textContent=total;
+// WYŚWIETLANIE KOSZYKA
+export async function renderCart() {
+  const user = auth.currentUser;
+  if(!user) return;
+
+  const cartRef = doc(db, "carts", user.uid);
+  const cartSnap = await getDoc(cartRef);
+
+  let cart = cartSnap.exists() ? cartSnap.data().items : [];
+  let total = 0;
+  cartEl.innerHTML = "";
+  cart.forEach(item => {
+    total += item.price;
+    cartEl.innerHTML += `<div class="cart-item">${item.name} – ${item.price} zł</div>`;
+  });
+  totalEl.textContent = total;
 }
 
-function checkout(){
-    if(!user) return alert("Musisz być zalogowany, aby zamówić!");
-    const orders = JSON.parse(localStorage.getItem("orders"))||[];
-    orders.push({ email:user.email, items:cart, date:new Date().toLocaleString() });
-    localStorage.setItem("orders",JSON.stringify(orders));
-    localStorage.removeItem("cart");
-    cart=[];
-    alert("Zamówienie wysłane!");
-    toggleCart();
+// ZAMÓWIENIE
+export async function checkout() {
+  const user = auth.currentUser;
+  if(!user) return alert("Musisz być zalogowany, aby zamówić!");
+
+  const cartRef = doc(db, "carts", user.uid);
+  const cartSnap = await getDoc(cartRef);
+
+  if(!cartSnap.exists() || cartSnap.data().items.length === 0) return alert("Koszyk jest pusty!");
+
+  await addDoc(collection(db, "orders"), {
+    userId: user.uid,
+    items: cartSnap.data().items,
+    date: new Date()
+  });
+
+  await setDoc(cartRef, { items: [] }); // wyczyszczenie koszyka
+  alert("Zamówienie wysłane!");
+  renderCart();
 }
