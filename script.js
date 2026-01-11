@@ -1,73 +1,56 @@
-// ===== FIREBASE =====
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
-  getAuth,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  getFirestore,
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  onSnapshot
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBSV9Pnlqa038C-6RM6kU_-YCP7wSfRxk4",
-  authDomain: "vorexanshop.firebaseapp.com",
-  projectId: "vorexanshop",
-  storageBucket: "vorexanshop.firebasestorage.app",
-  messagingSenderId: "902150803176",
-  appId: "1:902150803176:web:ca92a610675e671532835d"
-};
+const db = getFirestore();
+let currentUserEmail = null;
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-// ===== ELEMENTY =====
-const loginBox = document.getElementById("loginBox");
-const accountBox = document.getElementById("accountBox");
-const adminBtn = document.getElementById("adminPanelBtn");
-
-// ===== LOGOWANIE =====
-window.loginUser = function () {
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
-
-  signInWithEmailAndPassword(auth, email, password)
-    .then(() => {
-      alert("Zalogowano");
-    })
-    .catch(err => {
-      alert("Błąd logowania: " + err.message);
-    });
-};
-
-// ===== WYLOGOWANIE =====
-window.logoutUser = function () {
-  signOut(auth).then(() => {
-    location.reload();
-  });
-};
-
-// ===== SPRAWDZANIE STANU =====
+// po zalogowaniu
 onAuthStateChanged(auth, user => {
   if (user) {
-    loginBox.style.display = "none";
-    accountBox.style.display = "flex";
-
-    document.getElementById("accountName").innerText =
-      user.displayName || user.email;
-
-    // ADMIN
-    if (user.email === "parowka2013@gmail.com") {
-      adminBtn.style.display = "block";
-    } else {
-      adminBtn.style.display = "none";
-    }
-  } else {
-    loginBox.style.display = "block";
-    accountBox.style.display = "none";
-    adminBtn.style.display = "none";
+    currentUserEmail = user.email;
+    document.getElementById("chatBox").style.display = "flex";
+    loadChat();
   }
 });
 
-// ===== PRZEJŚCIE DO PANELU ADMINA =====
-window.goToAdmin = function () {
-  window.location.href = "/seller/";
+function loadChat() {
+  const q = query(
+    collection(db, "chats", currentUserEmail, "messages"),
+    orderBy("time")
+  );
+
+  onSnapshot(q, snap => {
+    const box = document.getElementById("messages");
+    box.innerHTML = "";
+    snap.forEach(doc => {
+      const d = doc.data();
+      const div = document.createElement("div");
+      div.className = "msg " + d.sender;
+      div.innerText = d.text;
+      box.appendChild(div);
+    });
+    box.scrollTop = box.scrollHeight;
+  });
+}
+
+window.sendMsg = async function () {
+  const input = document.getElementById("msgInput");
+  if (!input.value) return;
+
+  await addDoc(
+    collection(db, "chats", currentUserEmail, "messages"),
+    {
+      text: input.value,
+      sender: "user",
+      time: Date.now()
+    }
+  );
+
+  input.value = "";
 };
