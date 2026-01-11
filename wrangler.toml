@@ -1,8 +1,28 @@
-# wrangler.toml
-name = 'vorexanshop-api'
-main = "worker.js"
-compatibility_date = "2024-01-01"
+export default {
+  async fetch(request, env) {
+    if (request.method !== "POST") {
+      return new Response("Only POST", { status: 405 });
+    }
 
-routes = [
-  { pattern = "vorexanshop.pages.dev//api/*", zone_name = "vorexanshop.pages.dev/" }
-]
+    const { amount } = await request.json();
+
+    const stripeRes = await fetch("https://api.stripe.com/v1/payment_intents", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${env.STRIPE_SECRET_KEY}`,
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: new URLSearchParams({
+        amount: amount,
+        currency: "pln",
+        automatic_payment_methods: "enabled"
+      })
+    });
+
+    const data = await stripeRes.json();
+
+    return new Response(JSON.stringify(data), {
+      headers: { "Content-Type": "application/json" }
+    });
+  }
+};
