@@ -1,201 +1,73 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+// ===== FIREBASE =====
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-// Konfiguracja Firebase
 const firebaseConfig = {
-  apiKey: "TU_WPISZ_API_KEY",
-  authDomain: "TU_WPISZ_AUTH_DOMAIN",
-  projectId: "TU_WPISZ_PROJECT_ID",
-  storageBucket: "TU_WPISZ_STORAGE_BUCKET",
-  messagingSenderId: "TU_WPISZ_MESSAGING_SENDER_ID",
-  appId: "TU_WPISZ_APP_ID"
+  apiKey: "AIzaSyBSV9Pnlqa038C-6RM6kU_-YCP7wSfRxk4",
+  authDomain: "vorexanshop.firebaseapp.com",
+  projectId: "vorexanshop",
+  storageBucket: "vorexanshop.firebasestorage.app",
+  messagingSenderId: "902150803176",
+  appId: "1:902150803176:web:ca92a610675e671532835d"
 };
+
 const app = initializeApp(firebaseConfig);
-const auth = getAuth();
-const db = getFirestore();
+const auth = getAuth(app);
 
-// Koszyk
-let cart = [];
+// ===== ELEMENTY =====
+const loginBox = document.getElementById("loginBox");
+const accountBox = document.getElementById("accountBox");
+const adminBtn = document.getElementById("adminPanelBtn");
 
-// --- Rejestracja ---
-async function register() {
-  const email = document.getElementById("authEmail").value;
-  const pass = document.getElementById("authPass").value;
-  const name = document.getElementById("authName").value;
-  if(!email || !pass || !name) return alert("Wypełnij wszystkie pola");
+// ===== LOGOWANIE =====
+window.loginUser = function () {
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
 
-  const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
-  const user = userCredential.user;
-
-  await addDoc(collection(db, "users"), {
-    uid: user.uid,
-    displayName: name,
-    email,
-    role: "user"
-  });
-
-  alert("Zarejestrowano pomyślnie!");
-}
-
-// --- Logowanie ---
-async function login() {
-  const email = document.getElementById("authEmail").value;
-  const pass = document.getElementById("authPass").value;
-  if(!email || !pass) return alert("Podaj email i hasło");
-
-  const userCredential = await signInWithEmailAndPassword(auth, email, pass);
-  const user = userCredential.user;
-
-  const usersSnap = await getDocs(collection(db, "users"));
-  let userData = null;
-  usersSnap.forEach(u => {
-    if(u.data().uid === user.uid) userData = u.data();
-  });
-
-  if(!userData) return alert("Błąd logowania");
-
-  if(userData.role === "admin") showAdminPanel();
-  else showUserPanel();
-}
-
-// --- Automatyczne logowanie po odświeżeniu ---
-onAuthStateChanged(auth, async user => {
-  if(user) {
-    const usersSnap = await getDocs(collection(db, "users"));
-    let userData = null;
-    usersSnap.forEach(u => {
-      if(u.data().uid === user.uid) userData = u.data();
+  signInWithEmailAndPassword(auth, email, password)
+    .then(() => {
+      alert("Zalogowano");
+    })
+    .catch(err => {
+      alert("Błąd logowania: " + err.message);
     });
+};
 
-    if(userData.role === "admin") showAdminPanel();
-    else showUserPanel();
+// ===== WYLOGOWANIE =====
+window.logoutUser = function () {
+  signOut(auth).then(() => {
+    location.reload();
+  });
+};
+
+// ===== SPRAWDZANIE STANU =====
+onAuthStateChanged(auth, user => {
+  if (user) {
+    loginBox.style.display = "none";
+    accountBox.style.display = "flex";
+
+    document.getElementById("accountName").innerText =
+      user.displayName || user.email;
+
+    // ADMIN
+    if (user.email === "parowka2013@gmail.com") {
+      adminBtn.style.display = "block";
+    } else {
+      adminBtn.style.display = "none";
+    }
   } else {
-    document.getElementById("auth").style.display = "block";
-    document.getElementById("productsSection").style.display = "none";
-    document.getElementById("adminSection").style.display = "none";
+    loginBox.style.display = "block";
+    accountBox.style.display = "none";
+    adminBtn.style.display = "none";
   }
 });
 
-// --- Wylogowanie ---
-function logout() {
-  signOut(auth).then(() => location.reload());
-}
-
-// --- Panel admina ---
-async function showAdminPanel() {
-  document.getElementById("auth").style.display = "none";
-  document.getElementById("productsSection").style.display = "none";
-  document.getElementById("adminSection").style.display = "block";
-
-  const productsSnap = await getDocs(collection(db, "products"));
-  const table = document.getElementById("adminProductsTable");
-  table.innerHTML = "<tr><th>Nazwa</th><th>Cena</th><th>Zdjęcie</th></tr>";
-  productsSnap.forEach(docSnap => {
-    const p = docSnap.data();
-    table.innerHTML += `
-      <tr>
-        <td>${p.name}</td>
-        <td><input type="number" value="${p.price}" onchange="updatePrice('${docSnap.id}', this.value)"></td>
-        <td><img src="${p.image}" width="50"></td>
-      </tr>
-    `;
-  });
-
-  renderOrders();
-  showProductsAdmin(); // domyślnie pokaż produkty
-}
-
-async function updatePrice(productId, newPrice) {
-  await updateDoc(doc(db, "products", productId), { price: Number(newPrice) });
-  alert("Cena zaktualizowana!");
-}
-
-async function renderOrders() {
-  const ordersSnap = await getDocs(collection(db, "orders"));
-  const table = document.getElementById("adminOrdersTable");
-  table.innerHTML = "<tr><th>Data</th><th>Użytkownik</th><th>Produkty</th></tr>";
-
-  ordersSnap.forEach(docSnap => {
-    const o = docSnap.data();
-    table.innerHTML += `
-      <tr>
-        <td>${o.date || "-"}</td>
-        <td>${o.email || "-"}</td>
-        <td>${o.items?.map(i => i.name).join(", ") || "-"}</td>
-      </tr>
-    `;
-  });
-}
-
-// --- Przełączanie w panelu admina ---
-function showProductsAdmin() {
-  document.getElementById("adminProductsTable").style.display = "table";
-  document.getElementById("adminOrdersTable").style.display = "none";
-}
-
-function showOrdersAdmin() {
-  document.getElementById("adminProductsTable").style.display = "none";
-  document.getElementById("adminOrdersTable").style.display = "table";
-}
-
-// --- Panel użytkownika ---
-async function showUserPanel() {
-  document.getElementById("auth").style.display = "none";
-  document.getElementById("productsSection").style.display = "block";
-  document.getElementById("adminSection").style.display = "none";
-
-  const productsSnap = await getDocs(collection(db, "products"));
-  const container = document.getElementById("productsContainer");
-  container.innerHTML = "";
-  productsSnap.forEach(docSnap => {
-    const p = docSnap.data();
-    container.innerHTML += `
-      <div class="card">
-        <img src="${p.image}" alt="${p.name}">
-        <h3>${p.name}</h3>
-        <p>${p.description}</p>
-        <b>${p.price} zł</b>
-        <button onclick="addToCart('${p.name}', ${p.price})">Dodaj do koszyka</button>
-      </div>
-    `;
-  });
-}
-
-// --- Koszyk ---
-function toggleCart() {
-  document.getElementById("cart").classList.toggle("active");
-  renderCart();
-}
-
-function addToCart(name, price) {
-  cart.push({name, price});
-  alert("Dodano do koszyka");
-  renderCart();
-}
-
-function renderCart() {
-  const cartEl = document.getElementById("cartItems");
-  const totalEl = document.getElementById("total");
-  cartEl.innerHTML = "";
-  let total = 0;
-  cart.forEach(item => {
-    total += item.price;
-    cartEl.innerHTML += `<div class="cart-item">${item.name} – ${item.price} zł</div>`;
-  });
-  totalEl.textContent = total;
-}
-
-async function checkout() {
-  const user = auth.currentUser;
-  if(!user) return alert("Zaloguj się, aby zamówić");
-
-  await addDoc(collection(db, "orders"), {
-    email: user.email,
-    items: cart,
-    date: new Date().toLocaleString()
-  });
-  alert("Zamówienie wysłane!");
-  cart = [];
-  toggleCart();
-}
+// ===== PRZEJŚCIE DO PANELU ADMINA =====
+window.goToAdmin = function () {
+  window.location.href = "/seller/";
+};
