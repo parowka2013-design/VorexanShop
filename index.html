@@ -1,675 +1,177 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <title>Vorexan</title>
-  <link rel="stylesheet" href="style.css" />
-  <!-- Font Awesome dla ikon -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    /* STYLE KOSZYKA */
-    .cart-sidebar {
-      position: fixed;
-      top: 0;
-      right: -400px;
-      width: 400px;
-      height: 100vh;
-      background: white;
-      box-shadow: -5px 0 15px rgba(0,0,0,0.1);
-      z-index: 1000;
-      transition: right 0.3s ease;
-      display: flex;
-      flex-direction: column;
-    }
-    
-    .cart-sidebar.open {
-      right: 0;
-    }
-    
-    .cart-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 999;
-      display: none;
-    }
-    
-    .cart-overlay.show {
-      display: block;
-    }
-    
-    .cart-header {
-      padding: 20px;
-      border-bottom: 1px solid #eee;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #2c3e50;
-      color: white;
-    }
-    
-    .cart-header h3 {
-      margin: 0;
-      font-size: 1.5rem;
-    }
-    
-    .close-cart {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
-    
-    .cart-items {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px;
-    }
-    
-    .cart-item {
-      display: flex;
-      align-items: center;
-      padding: 15px;
-      border-bottom: 1px solid #eee;
-      gap: 15px;
-    }
-    
-    .cart-item-img {
-      width: 60px;
-      height: 60px;
-      object-fit: cover;
-      border-radius: 8px;
-    }
-    
-    .cart-item-info {
-      flex: 1;
-    }
-    
-    .cart-item-name {
-      margin: 0 0 5px 0;
-      font-weight: 600;
-    }
-    
-    .cart-item-desc {
-      margin: 0 0 5px 0;
-      color: #666;
-      font-size: 0.9rem;
-    }
-    
-    .cart-item-price {
-      font-weight: bold;
-      color: #2c3e50;
-    }
-    
-    .cart-item-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    
-    .quantity-btn {
-      width: 25px;
-      height: 25px;
-      border: 1px solid #ddd;
-      background: white;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    
-    .quantity-btn:hover {
-      background: #f5f5f5;
-    }
-    
-    .cart-item-quantity {
-      min-width: 30px;
-      text-align: center;
-    }
-    
-    .remove-item {
-      background: #e74c3c;
-      color: white;
-      border: none;
-      width: 25px;
-      height: 25px;
-      border-radius: 4px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .cart-footer {
-      padding: 20px;
-      border-top: 2px solid #eee;
-      background: #f8f9fa;
-    }
-    
-    .cart-summary {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      font-size: 1.1rem;
-    }
-    
-    .cart-total {
-      font-weight: bold;
-      color: #2c3e50;
-      font-size: 1.3rem;
-    }
-    
-    .cart-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    
-    .checkout-btn {
-      background: #27ae60;
-      color: white;
-      border: none;
-      padding: 15px;
-      border-radius: 8px;
-      font-size: 1.1rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    
-    .checkout-btn:hover {
-      background: #219653;
-    }
-    
-    .clear-cart-btn {
-      background: #e74c3c;
-      color: white;
-      border: none;
-      padding: 10px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    
-    .empty-cart {
-      text-align: center;
-      padding: 40px 20px;
-      color: #666;
-    }
-    
-    .empty-cart i {
-      font-size: 3rem;
-      margin-bottom: 15px;
-      color: #ddd;
-    }
-    
-    .cart-icon-btn {
-      position: relative;
-      background: #2c3e50;
-      color: white;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 6px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    
-    .cart-count {
-      background: #e74c3c;
-      color: white;
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.8rem;
-    }
-    
-    /* STYLE KART PRODUKTÓW */
-    .card {
-      position: relative;
-      transition: transform 0.3s;
-    }
-    
-    .card:hover {
-      transform: translateY(-5px);
-    }
-    
-    .add-to-cart-btn {
-      background: #3498db;
-      color: white;
-      border: none;
-      padding: 8px 15px;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 10px;
-      width: 100%;
-      transition: background 0.3s;
-    }
-    
-    .add-to-cart-btn:hover {
-      background: #2980b9;
-    }
-    
-    /* MEDIA QUERIES */
-    @media (max-width: 768px) {
-      .cart-sidebar {
-        width: 100%;
-        right: -100%;
-      }
-      
-      .cart-sidebar.open {
-        right: 0;
-      }
-    }
-    
-    /* ANIMACJE */
-    @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-    
-    .cart-item {
-      animation: slideIn 0.3s ease-out;
-    }
-    
-    .notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #27ae60;
-      color: white;
-      padding: 15px 20px;
-      border-radius: 8px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-      z-index: 1001;
-      animation: slideInRight 0.3s ease-out;
-    }
-    
-    @keyframes slideInRight {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vorexan - Game Dev & Programista</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Header -->
+    <header class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="brand">
+                    <h1>Vorexan</h1>
+                    <p>Game Dev <span class="highlight">•</span> Programista <span class="highlight">•</span> Minecraft Dev</p>
+                </div>
+                <div class="top-buttons">
+                    <button class="btn btn-primary" onclick="goAccount()">
+                        <i class="fas fa-user"></i> Konto
+                    </button>
+                    <button class="cart-icon-btn" id="cartIconBtn">
+                        <i class="fas fa-shopping-cart"></i>
+                        Koszyk
+                        <span class="cart-count" id="cartCount">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
 
-<header class="hero">
-  <h1>Vorexan</h1>
-  <p>Game Dev • Programista • Minecraft Dev</p>
+    <!-- Main Content -->
+    <main class="container">
+        <section class="offers">
+            <div class="section-title">
+                <h2>🎯 Moja Oferta</h2>
+                <p>Profesjonalne usługi programistyczne i gamingowe</p>
+            </div>
+            
+            <div class="cards">
+                <!-- Plugin Minecraft -->
+                <div class="card" data-product="plugin" data-price="50" data-name="Plugin Minecraft" data-desc="Custom plugin z GUI i zaawansowanymi funkcjami">
+                    <img src="images/plugin.png" alt="Plugin Minecraft" onerror="this.src='images/default.png'">
+                    <div class="card-content">
+                        <h3>Plugin Minecraft</h3>
+                        <p>Custom plugin (GUI, systemy, custom commands)</p>
+                        <div class="card-price">50 zł</div>
+                        <button class="add-to-cart-btn" onclick="addToCart(this)">
+                            <i class="fas fa-cart-plus"></i> Dodaj do koszyka
+                        </button>
+                    </div>
+                </div>
 
-  <div class="top-buttons">
-    <button onclick="goAccount()">Konto</button>
-    <button id="cartIconBtn" class="cart-icon-btn">
-      <i class="fas fa-shopping-cart"></i>
-      Koszyk
-      <span class="cart-count" id="cartCount">0</span>
-    </button>
-  </div>
-</header>
+                <!-- Skrypty Skript -->
+                <div class="card" data-product="skript" data-price="30" data-name="Skrypty Skript" data-desc="Zaawansowane skrypty na serwer">
+                    <img src="images/skript.png" alt="Skrypty Skript" onerror="this.src='images/default.png'">
+                    <div class="card-content">
+                        <h3>Skrypty Skript</h3>
+                        <p>Rangi, eventy, systemy nagród</p>
+                        <div class="card-price">30 zł</div>
+                        <button class="add-to-cart-btn" onclick="addToCart(this)">
+                            <i class="fas fa-cart-plus"></i> Dodaj do koszyka
+                        </button>
+                    </div>
+                </div>
 
-<section class="offers">
-  <h2>📦 Oferta</h2>
+                <!-- Strona WWW -->
+                <div class="card" data-product="www" data-price="90" data-name="Strona WWW" data-desc="Profesjonalna strona internetowa">
+                    <img src="images/www.png" alt="Strona WWW" onerror="this.src='images/default.png'">
+                    <div class="card-content">
+                        <h3>Strona WWW</h3>
+                        <p>Portfolio lub sklep internetowy</p>
+                        <div class="card-price">90 zł</div>
+                        <button class="add-to-cart-btn" onclick="addToCart(this)">
+                            <i class="fas fa-cart-plus"></i> Dodaj do koszyka
+                        </button>
+                    </div>
+                </div>
 
-  <div class="cards">
-    <!-- Plugin Minecraft -->
-    <div class="card" data-product="plugin" data-price="50" data-name="Plugin Minecraft" data-desc="Custom plugin (GUI, prace)" data-img="images/plugin.png">
-      <img src="images/plugin.png" alt="Plugin Minecraft">
-      <h3>Plugin Minecraft</h3>
-      <p>Custom plugin (GUI, prace)</p>
-      <b>50 zł</b>
-      <button class="add-to-cart-btn" onclick="addToCart(this)">
-        <i class="fas fa-cart-plus"></i> Dodaj do koszyka
-      </button>
-    </div>
+                <!-- Montaż wideo -->
+                <div class="card" data-product="video" data-price="0.6" data-name="Montaż wideo" data-desc="Profesjonalny montaż video">
+                    <img src="images/video.png" alt="Montaż wideo" onerror="this.src='images/default.png'">
+                    <div class="card-content">
+                        <h3>Montaż wideo</h3>
+                        <p>1 sek = 0,01 zł (minimalnie 1 minuta)</p>
+                        <div class="card-price">od 0,60 zł</div>
+                        <button class="add-to-cart-btn" onclick="addToCart(this)">
+                            <i class="fas fa-cart-plus"></i> Dodaj do koszyka
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 
-    <!-- Skrypty Skript -->
-    <div class="card" data-product="skript" data-price="30" data-name="Skrypty Skript" data-desc="Rangi, eventy" data-img="images/skript.png">
-      <img src="images/skript.png" alt="Skrypty Skript">
-      <h3>Skrypty Skript</h3>
-      <p>Rangi, eventy</p>
-      <b>30 zł</b>
-      <button class="add-to-cart-btn" onclick="addToCart(this)">
-        <i class="fas fa-cart-plus"></i> Dodaj do koszyka
-      </button>
-    </div>
-
-    <!-- Strona WWW -->
-    <div class="card" data-product="www" data-price="90" data-name="Strona WWW" data-desc="Portfolio / sklep" data-img="images/www.png">
-      <img src="images/www.png" alt="Strona WWW">
-      <h3>Strona WWW</h3>
-      <p>Portfolio / sklep</p>
-      <b>90 zł</b>
-      <button class="add-to-cart-btn" onclick="addToCart(this)">
-        <i class="fas fa-cart-plus"></i> Dodaj do koszyka
-      </button>
-    </div>
-
-    <!-- Montaż wideo -->
-    <div class="card" data-product="video" data-price="0.6" data-name="Montaż wideo" data-desc="1 sek = 0,01 zł (min. 1 min)" data-img="images/video.png">
-      <img src="images/video.png" alt="Montaż wideo">
-      <h3>Montaż wideo</h3>
-      <p>1 sek = 0,01 zł (min. 1 min)</p>
-      <b>od 0,60 zł</b>
-      <button class="add-to-cart-btn" onclick="addToCart(this)">
-        <i class="fas fa-cart-plus"></i> Dodaj do koszyka
-      </button>
-    </div>
-  </div>
-</section>
-
-<!-- KOSZYK (SIDEBAR) -->
-<div class="cart-overlay" id="cartOverlay"></div>
-
-<div class="cart-sidebar" id="cartSidebar">
-  <div class="cart-header">
-    <h3><i class="fas fa-shopping-cart"></i> Twój koszyk</h3>
-    <button class="close-cart" onclick="closeCart()">
-      <i class="fas fa-times"></i>
-    </button>
-  </div>
-  
-  <div class="cart-items" id="cartItemsContainer">
-    <!-- Elementy koszyka będą dodawane dynamicznie -->
-    <div class="empty-cart" id="emptyCartMessage">
-      <i class="fas fa-shopping-cart"></i>
-      <p>Twój koszyk jest pusty</p>
-      <p>Dodaj produkty z oferty!</p>
-    </div>
-  </div>
-  
-  <div class="cart-footer">
-    <div class="cart-summary">
-      <span>Suma:</span>
-      <span class="cart-total" id="cartTotal">0.00 zł</span>
-    </div>
-    
-    <div class="cart-actions">
-      <button class="checkout-btn" onclick="goToCheckout()">
-        <i class="fas fa-lock"></i> Przejdź do płatności
-      </button>
-      <button class="clear-cart-btn" onclick="clearCart()">
-        <i class="fas fa-trash"></i> Wyczyść koszyk
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- CHAT -->
-<button id="chatToggle">💬</button>
-
-<div id="chatBox" class="hidden">
-  <div class="chat-header">
-    <span>Chat z Vorexan</span>
-    <button onclick="toggleChat()">✕</button>
-  </div>
-
-  <div id="chatMessages"></div>
-
-  <div class="chat-input">
-    <input id="chatInput" placeholder="Napisz wiadomość..." />
-    <button onclick="sendMessage()">Wyślij</button>
-  </div>
-</div>
-
-<script>
-  // ==================== KOSZYK ====================
-  let cart = JSON.parse(localStorage.getItem('cart')) || [];
-  
-  // Inicjalizacja koszyka przy ładowaniu strony
-  document.addEventListener('DOMContentLoaded', function() {
-    updateCartUI();
-    
-    // Obsługa kliknięcia w ikonę koszyka
-    document.getElementById('cartIconBtn').addEventListener('click', openCart);
-    
-    // Obsługa kliknięcia w overlay
-    document.getElementById('cartOverlay').addEventListener('click', closeCart);
-    
-    // Dodaj obsługę Enter w polu chat
-    document.getElementById('chatInput')?.addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') sendMessage();
-    });
-  });
-  
-  // Otwórz koszyk
-  function openCart() {
-    document.getElementById('cartSidebar').classList.add('open');
-    document.getElementById('cartOverlay').classList.add('show');
-    document.body.style.overflow = 'hidden'; // Zablokuj scroll
-  }
-  
-  // Zamknij koszyk
-  function closeCart() {
-    document.getElementById('cartSidebar').classList.remove('open');
-    document.getElementById('cartOverlay').classList.remove('show');
-    document.body.style.overflow = ''; // Odblokuj scroll
-  }
-  
-  // Dodaj produkt do koszyka
-  function addToCart(button) {
-    const card = button.closest('.card');
-    const product = {
-      id: card.dataset.product,
-      name: card.dataset.name,
-      price: parseFloat(card.dataset.price),
-      desc: card.dataset.desc,
-      img: card.dataset.img,
-      quantity: 1
-    };
-    
-    // Sprawdź czy produkt już jest w koszyku
-    const existingItemIndex = cart.findIndex(item => item.id === product.id);
-    
-    if (existingItemIndex > -1) {
-      // Zwiększ ilość jeśli produkt już istnieje
-      cart[existingItemIndex].quantity += 1;
-    } else {
-      // Dodaj nowy produkt
-      cart.push(product);
-    }
-    
-    // Zapisz do localStorage
-    saveCart();
-    
-    // Zaktualizuj UI
-    updateCartUI();
-    
-    // Pokaż powiadomienie
-    showNotification(`Dodano: ${product.name} do koszyka!`);
-    
-    // Otwórz koszyk (opcjonalnie)
-    // openCart();
-  }
-  
-  // Usuń produkt z koszyka
-  function removeFromCart(productId) {
-    cart = cart.filter(item => item.id !== productId);
-    saveCart();
-    updateCartUI();
-  }
-  
-  // Zaktualizuj ilość produktu
-  function updateQuantity(productId, change) {
-    const itemIndex = cart.findIndex(item => item.id === productId);
-    
-    if (itemIndex > -1) {
-      cart[itemIndex].quantity += change;
-      
-      // Jeśli ilość = 0, usuń produkt
-      if (cart[itemIndex].quantity <= 0) {
-        cart.splice(itemIndex, 1);
-      }
-      
-      saveCart();
-      updateCartUI();
-    }
-  }
-  
-  // Wyczyść cały koszyk
-  function clearCart() {
-    if (confirm('Czy na pewno chcesz wyczyścić koszyk?')) {
-      cart = [];
-      saveCart();
-      updateCartUI();
-      showNotification('Koszyk wyczyszczony!');
-    }
-  }
-  
-  // Zapisz koszyk do localStorage
-  function saveCart() {
-    localStorage.setItem('cart', JSON.stringify(cart));
-  }
-  
-  // Zaktualizuj UI koszyka
-  function updateCartUI() {
-    const cartCount = document.getElementById('cartCount');
-    const cartItemsContainer = document.getElementById('cartItemsContainer');
-    const cartTotal = document.getElementById('cartTotal');
-    const emptyCartMessage = document.getElementById('emptyCartMessage');
-    
-    // Aktualizuj licznik
-    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-    cartCount.textContent = totalItems;
-    
-    // Oblicz całkowitą kwotę
-    const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    cartTotal.textContent = totalPrice.toFixed(2) + ' zł';
-    
-    // Wyczyść kontener
-    cartItemsContainer.innerHTML = '';
-    
-    if (cart.length === 0) {
-      // Pokaż komunikat o pustym koszyku
-      emptyCartMessage.style.display = 'block';
-      cartItemsContainer.appendChild(emptyCartMessage);
-    } else {
-      // Ukryj komunikat o pustym koszyku
-      emptyCartMessage.style.display = 'none';
-      
-      // Dodaj produkty do koszyka
-      cart.forEach(item => {
-        const cartItem = document.createElement('div');
-        cartItem.className = 'cart-item';
-        cartItem.innerHTML = `
-          <img src="${item.img}" alt="${item.name}" class="cart-item-img" onerror="this.src='images/default.png'">
-          <div class="cart-item-info">
-            <h4 class="cart-item-name">${item.name}</h4>
-            <p class="cart-item-desc">${item.desc}</p>
-            <div class="cart-item-price">${(item.price * item.quantity).toFixed(2)} zł</div>
-          </div>
-          <div class="cart-item-actions">
-            <button class="quantity-btn" onclick="updateQuantity('${item.id}', -1)">-</button>
-            <span class="cart-item-quantity">${item.quantity}</span>
-            <button class="quantity-btn" onclick="updateQuantity('${item.id}', 1)">+</button>
-            <button class="remove-item" onclick="removeFromCart('${item.id}')">
-              <i class="fas fa-trash"></i>
+    <!-- Cart Sidebar -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3><i class="fas fa-shopping-cart"></i> Twój Koszyk</h3>
+            <button class="close-cart" onclick="closeCart()">
+                <i class="fas fa-times"></i>
             </button>
-          </div>
-        `;
-        cartItemsContainer.appendChild(cartItem);
-      });
-    }
-  }
-  
-  // Przejdź do płatności
-  function goToCheckout() {
-    if (cart.length === 0) {
-      alert('Koszyk jest pusty! Dodaj produkty przed przejściem do płatności.');
-      return;
-    }
-    
-    // Zbuduj URL z parametrami koszyka
-    const params = new URLSearchParams();
-    
-    // Dodaj produkty jako JSON (lub w inny sposób)
-    params.append('cart', JSON.stringify(cart));
-    params.append('total', cart.reduce((sum, item) => sum + (item.price * item.quantity), 0));
-    
-    // Przekieruj do strony płatności
-    window.location.href = `payment.html?${params.toString()}`;
-    
-    // Zamknij koszyk
-    closeCart();
-  }
-  
-  // Pokaż powiadomienie
-  function showNotification(message) {
-    // Usuń istniejące powiadomienia
-    const existingNotification = document.querySelector('.notification');
-    if (existingNotification) {
-      existingNotification.remove();
-    }
-    
-    // Stwórz nowe powiadomienie
-    const notification = document.createElement('div');
-    notification.className = 'notification';
-    notification.innerHTML = `
-      <i class="fas fa-check-circle"></i> ${message}
-    `;
-    
-    document.body.appendChild(notification);
-    
-    // Automatycznie usuń po 3 sekundach
-    setTimeout(() => {
-      notification.remove();
-    }, 3000);
-  }
-  
-  // ==================== CHAT ====================
-  function toggleChat() {
-    const chatBox = document.getElementById('chatBox');
-    chatBox.classList.toggle('hidden');
-  }
-  
-  function sendMessage() {
-    const input = document.getElementById('chatInput');
-    const message = input.value.trim();
-    
-    if (message) {
-      const chatMessages = document.getElementById('chatMessages');
-      const msgDiv = document.createElement('div');
-      msgDiv.textContent = 'Ty: ' + message;
-      chatMessages.appendChild(msgDiv);
-      input.value = '';
-      
-      // Automatyczna odpowiedź (symulacja)
-      setTimeout(() => {
-        const responses = [
-          'Cześć! Jak mogę Ci pomóc?',
-          'Dziękuję za wiadomość! Odpowiem najszybciej jak to możliwe.',
-          'Czy potrzebujesz pomocy z wyborem produktu?',
-          'Pracuję nad Twoim zapytaniem...'
-        ];
-        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-        const botMsg = document.createElement('div');
-        botMsg.textContent = 'Vorexan: ' + randomResponse;
-        botMsg.style.color = '#3498db';
-        chatMessages.appendChild(botMsg);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-      }, 1000);
-      
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-  }
-  
-  // ==================== INNE FUNKCJE ====================
-  function goAccount() {
-    alert('Strona konta w budowie!');
-    // window.location.href = 'account.html';
-  }
-  
-  // Obsługa klawisza Enter w chacie
-  document.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter' && !document.getElementById('chatBox').classList.contains('hidden')) {
-      sendMessage();
-    }
-  });
-</script>
+        </div>
+        
+        <div class="cart-items" id="cartItemsContainer">
+            <div class="empty-cart" id="emptyCartMessage">
+                <i class="fas fa-shopping-cart"></i>
+                <h4>Koszyk jest pusty</h4>
+                <p>Dodaj produkty z oferty!</p>
+            </div>
+        </div>
+        
+        <div class="cart-footer">
+            <div class="cart-summary">
+                <span>Łącznie:</span>
+                <span class="cart-total" id="cartTotal">0.00 zł</span>
+            </div>
+            
+            <div class="cart-actions">
+                <button class="checkout-btn" onclick="goToCheckout()">
+                    <i class="fas fa-lock"></i> Przejdź do płatności
+                </button>
+                <button class="clear-cart-btn" onclick="clearCart()">
+                    <i class="fas fa-trash"></i> Wyczyść koszyk
+                </button>
+            </div>
+        </div>
+    </div>
 
+    <!-- Chat -->
+    <button class="chat-toggle" id="chatToggle">
+        <i class="fas fa-comments"></i>
+    </button>
+    
+    <div class="chat-box" id="chatBox">
+        <div class="chat-header">
+            <span>Chat z Vorexan</span>
+            <button onclick="toggleChat()" style="background:none;border:none;color:white;">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="Napisz wiadomość...">
+            <button class="btn btn-primary" onclick="sendMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <h3>Vorexan</h3>
+                </div>
+                <div class="footer-links">
+                    <a href="#" onclick="showTerms()">Regulamin</a>
+                    <a href="#" onclick="showPrivacy()">Polityka prywatności</a>
+                    <a href="mailto:contact@vorexan.pl">Kontakt</a>
+                </div>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-discord"></i></a>
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <p style="margin-top: 2rem; color: #aaa;">© 2024 Vorexan. Wszystkie prawa zastrzeżone.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
