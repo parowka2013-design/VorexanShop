@@ -1,0 +1,20 @@
+{
+  "name": "vorexan-shop",
+  "version": "1.0.0",
+  "description": "Sklep e-commerce Vorexan na Cloudflare Pages",
+  "main": "public/index.html",
+  "scripts": {
+    "dev": "wrangler pages dev public --compatibility-date=2024-01-01",
+    "deploy": "wrangler pages deploy public --project-name=vorexan-shop"
+  },
+  "dependencies": {
+    "stripe": "^14.0.0"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0",
+    "@cloudflare/workers-types": "^4.0.0"
+  },
+  "keywords": ["e-commerce", "cloudflare", "stripe", "shop"],
+  "author": "Vorexan",
+  "license": "MIT"
+}
