@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vorexan - Usługi Programistyczne</title>
+    <title>Vorexan - Wesprzyj przez Tipply</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* ===== RESET & BASE ===== */
         * {
             margin: 0;
             padding: 0;
@@ -13,8 +14,8 @@
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
             min-height: 100vh;
             color: #fff;
             line-height: 1.6;
@@ -26,67 +27,126 @@
             padding: 0 20px;
         }
         
-        /* HEADER */
-        header.hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 3rem 0;
+        /* ===== HEADER ===== */
+        .main-header {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .logo-text h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(45deg, #fff, #a8edea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .logo-text p {
+            font-size: 0.9rem;
+            color: #b0b0b0;
+        }
+        
+        .discord-cta {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #5865F2;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .discord-cta:hover {
+            background: #4752C4;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(88, 101, 242, 0.3);
+        }
+        
+        /* ===== HERO SECTION ===== */
+        .hero {
+            padding: 5rem 0;
             text-align: center;
             position: relative;
             overflow: hidden;
         }
         
-        header.hero::before {
+        .hero::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none"><path d="M0,0 L1000,0 L1000,100 L0,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
-            opacity: 0.1;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(118, 75, 162, 0.1) 0%, transparent 50%);
         }
         
         .hero-content {
             position: relative;
             z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
         }
         
-        header h1 {
+        .hero h2 {
             font-size: 3.5rem;
-            margin-bottom: 0.5rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            background: linear-gradient(45deg, #fff, #f0f0f0);
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #667eea, #764ba2, #00c9ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            animation: gradientShift 8s ease infinite;
+            background-size: 200% 200%;
         }
         
-        header p {
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .hero p {
             font-size: 1.3rem;
-            opacity: 0.9;
-            margin-bottom: 1.5rem;
+            color: #b0b0b0;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
         
-        .discord-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: #5865F2;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: transform 0.3s;
-        }
-        
-        .discord-badge:hover {
-            transform: translateY(-2px);
-            background: #4752C4;
-        }
-        
-        /* SERVICES */
-        .services {
+        /* ===== HOW IT WORKS ===== */
+        .how-it-works {
             padding: 4rem 0;
         }
         
@@ -95,188 +155,241 @@
             margin-bottom: 3rem;
         }
         
-        .section-title h2 {
-            font-size: 2.8rem;
+        .section-title h3 {
+            font-size: 2.5rem;
             margin-bottom: 1rem;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: #fff;
         }
         
         .section-title p {
-            font-size: 1.2rem;
             color: #b0b0b0;
+            font-size: 1.1rem;
             max-width: 600px;
             margin: 0 auto;
         }
         
-        /* TIPPLY INFO */
-        .tipply-info {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 2rem;
-            margin-bottom: 3rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-        }
-        
-        .tipply-info h3 {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            color: #fff;
-        }
-        
-        .tipply-info h3 i {
-            color: #00c853;
-        }
-        
-        .process-steps {
+        .steps-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
+            gap: 2rem;
+            margin-top: 3rem;
         }
         
-        .step {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 1.5rem;
-            border-radius: 10px;
-            border-left: 4px solid #667eea;
+        .step-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .step-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+        
+        .step-card:hover {
+            transform: translateY(-10px);
+            border-color: #667eea;
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.2);
         }
         
         .step-number {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            background: #667eea;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border-radius: 50%;
-            text-align: center;
-            line-height: 30px;
+            font-size: 1.5rem;
             font-weight: bold;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
         
-        /* CARDS */
-        .cards {
+        .step-card h4 {
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+        
+        .step-card p {
+            color: #b0b0b0;
+            font-size: 0.95rem;
+        }
+        
+        /* ===== SERVICES ===== */
+        .services {
+            padding: 4rem 0;
+        }
+        
+        .services-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 2rem;
+            margin-top: 3rem;
         }
         
-        .card {
+        .service-card {
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 2rem;
-            text-align: center;
+            border-radius: 20px;
+            padding: 2.5rem;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
         }
         
-        .card:hover {
-            transform: translateY(-10px);
+        .service-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent, rgba(102, 126, 234, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
             border-color: #667eea;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
         }
         
-        .card-image {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 1.5rem;
-            border-radius: 15px;
+        .service-card:hover::after {
+            opacity: 1;
+        }
+        
+        .service-icon {
+            width: 70px;
+            height: 70px;
             background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.5rem;
-            color: white;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
         }
         
-        .card h3 {
+        .service-card h4 {
             font-size: 1.5rem;
             margin-bottom: 1rem;
             color: #fff;
         }
         
-        .card p {
+        .service-card p {
             color: #b0b0b0;
             margin-bottom: 1.5rem;
             min-height: 80px;
         }
         
-        .card-price {
+        .service-price {
             font-size: 2.2rem;
             font-weight: bold;
             color: #00c853;
             margin-bottom: 1.5rem;
         }
         
-        .buy-btn {
+        .donate-btn {
+            width: 100%;
+            padding: 1rem;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 1rem 2rem;
             border-radius: 10px;
             font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
-            width: 100%;
-            transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.8rem;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 1;
         }
         
-        .buy-btn:hover {
+        .donate-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
         }
         
-        /* CUSTOM DONATION */
+        .donate-btn.featured {
+            background: linear-gradient(135deg, #00c853 0%, #00e676 100%);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: translateY(0); box-shadow: 0 5px 15px rgba(0, 200, 83, 0.4); }
+            50% { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0, 200, 83, 0.6); }
+            100% { transform: translateY(0); box-shadow: 0 5px 15px rgba(0, 200, 83, 0.4); }
+        }
+        
+        /* ===== CUSTOM DONATION ===== */
         .custom-donation {
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 2rem;
-            margin-top: 3rem;
-            text-align: center;
+            border-radius: 20px;
+            padding: 3rem;
+            margin-top: 4rem;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
         }
         
-        .custom-donation h3 {
-            font-size: 1.8rem;
+        .custom-donation h4 {
+            font-size: 2rem;
             margin-bottom: 1rem;
             color: #fff;
         }
         
+        .custom-donation p {
+            color: #b0b0b0;
+            margin-bottom: 2rem;
+        }
+        
+        .amount-input-container {
+            max-width: 400px;
+            margin: 2rem auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            transition: border-color 0.3s;
+        }
+        
+        .amount-input-container:focus-within {
+            border-color: #667eea;
+        }
+        
         .amount-input {
             display: flex;
-            max-width: 300px;
-            margin: 1.5rem auto;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            align-items: center;
         }
         
         .amount-input input {
             flex: 1;
             background: transparent;
             border: none;
-            padding: 1rem;
-            font-size: 1.2rem;
+            padding: 1.2rem;
+            font-size: 1.3rem;
             color: white;
             text-align: center;
+            outline: none;
         }
         
         .amount-input .currency {
             background: rgba(255, 255, 255, 0.2);
-            padding: 1rem;
+            padding: 1.2rem 1.5rem;
             font-weight: bold;
             color: white;
         }
@@ -285,48 +398,135 @@
             background: linear-gradient(135deg, #00c853 0%, #00e676 100%);
             color: white;
             border: none;
-            padding: 1rem 2rem;
-            border-radius: 10px;
-            font-size: 1.1rem;
+            padding: 1.2rem 2.5rem;
+            border-radius: 12px;
+            font-size: 1.2rem;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s;
             display: inline-flex;
             align-items: center;
             gap: 0.8rem;
+            transition: all 0.3s;
         }
         
         .custom-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(0, 200, 83, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 200, 83, 0.4);
         }
         
-        /* FOOTER */
-        footer {
-            text-align: center;
-            padding: 3rem 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin-top: 4rem;
+        /* ===== TESTIMONIALS ===== */
+        .testimonials {
+            padding: 4rem 0;
         }
         
-        .footer-logo {
-            font-size: 2rem;
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .testimonial-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .testimonial-content {
+            font-style: italic;
+            color: #b0b0b0;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        
+        .testimonial-content::before {
+            content: '"';
+            position: absolute;
+            left: 0;
+            top: -10px;
+            font-size: 3rem;
+            color: #667eea;
+            opacity: 0.5;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-weight: bold;
-            margin-bottom: 1rem;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        }
+        
+        .author-info h5 {
+            font-size: 1.1rem;
+            color: #fff;
+        }
+        
+        .author-info p {
+            color: #b0b0b0;
+            font-size: 0.9rem;
+        }
+        
+        /* ===== FOOTER ===== */
+        .main-footer {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4rem 0 2rem;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+        
+        .footer-column h5 {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            color: #fff;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .footer-links a {
+            color: #b0b0b0;
+            text-decoration: none;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .footer-links a:hover {
+            color: #667eea;
         }
         
         .social-links {
             display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-            margin: 2rem 0;
+            gap: 1rem;
+            margin-top: 1.5rem;
         }
         
-        .social-links a {
+        .social-link {
             width: 45px;
             height: 45px;
             background: rgba(255, 255, 255, 0.1);
@@ -339,57 +539,20 @@
             transition: all 0.3s;
         }
         
-        .social-links a:hover {
+        .social-link:hover {
             background: #667eea;
             transform: translateY(-3px);
         }
         
-        .copyright {
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             color: #888;
             font-size: 0.9rem;
-            margin-top: 2rem;
         }
         
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 2.5rem;
-            }
-            
-            .cards {
-                grid-template-columns: 1fr;
-            }
-            
-            .process-steps {
-                grid-template-columns: 1fr;
-            }
-            
-            .section-title h2 {
-                font-size: 2.2rem;
-            }
-        }
-        
-        /* ANIMATIONS */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.6s ease-out;
-        }
-        
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        /* MODAL */
+        /* ===== MODAL ===== */
         .modal {
             display: none;
             position: fixed;
@@ -406,33 +569,58 @@
         
         .modal.show {
             display: flex;
-            animation: fadeIn 0.3s ease-out;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
         .modal-content {
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             border-radius: 20px;
-            padding: 2.5rem;
+            padding: 3rem;
             max-width: 500px;
             width: 100%;
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
         }
         
-        .modal-header {
-            text-align: center;
-            margin-bottom: 2rem;
+        .close-modal {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+        
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
         
         .modal-icon {
             font-size: 4rem;
             color: #00c853;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
         }
         
-        .modal h2 {
+        .modal h3 {
             font-size: 1.8rem;
             margin-bottom: 1rem;
+            text-align: center;
             color: #fff;
         }
         
@@ -450,10 +638,10 @@
         }
         
         .modal-instructions li {
-            margin-bottom: 0.8rem;
+            margin-bottom: 1rem;
         }
         
-        .modal-buttons {
+        .modal-actions {
             display: flex;
             gap: 1rem;
             margin-top: 2rem;
@@ -468,15 +656,16 @@
             text-align: center;
             text-decoration: none;
             transition: all 0.3s;
+            border: none;
+            font-size: 1rem;
         }
         
-        .modal-btn-primary {
+        .modal-btn.primary {
             background: #667eea;
             color: white;
-            border: none;
         }
         
-        .modal-btn-secondary {
+        .modal-btn.secondary {
             background: rgba(255, 255, 255, 0.1);
             color: white;
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -485,189 +674,350 @@
         .modal-btn:hover {
             transform: translateY(-2px);
         }
+        
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .hero h2 {
+                font-size: 2.5rem;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .services-grid,
+            .steps-grid,
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                padding: 2rem 1.5rem;
+            }
+            
+            .modal-actions {
+                flex-direction: column;
+            }
+        }
+        
+        /* ===== UTILITIES ===== */
+        .tipply-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #b0b0b0;
+            margin-top: 1rem;
+        }
+        
+        .tipply-badge i {
+            color: #00c853;
+        }
+        
+        .highlight {
+            color: #00c853;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <!-- Header -->
-    <header class="hero">
+    <header class="main-header">
         <div class="container">
-            <div class="hero-content">
-                <h1>Vorexan</h1>
-                <p>Game Dev • Programista • Minecraft Developer</p>
-                <a href="https://discord.com/users/TWOJE_ID_DISCORD" class="discord-badge" target="_blank">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1>Vorexan</h1>
+                        <p>Game Dev & Programista</p>
+                    </div>
+                </div>
+                <a href="https://discord.com/users/TWOJE_ID" class="discord-cta" target="_blank">
                     <i class="fab fa-discord"></i> Discord: vorexan
                 </a>
             </div>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="container">
-        <section class="services">
-            <div class="section-title fade-in">
-                <h2>🎯 Moje Usługi</h2>
-                <p>Wybierz usługę i wesprzyj moją pracę poprzez Tipply</p>
-            </div>
-
-            <!-- Tipply Process Info -->
-            <div class="tipply-info fade-in">
-                <h3><i class="fas fa-info-circle"></i> Jak to działa?</h3>
-                <p>Wspierasz moją pracę poprzez Tipply, a ja dostarczam wybraną usługę!</p>
-                
-                <div class="process-steps">
-                    <div class="step">
-                        <div class="step-number">1</div>
-                        <h4>Wybierz usługę</h4>
-                        <p>Kliknij przycisk "Wesprzyj" przy wybranej usłudze</p>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">2</div>
-                        <h4>Wpłać przez Tipply</h4>
-                        <p>Zostaniesz przekierowany na Tipply.pl aby dokonać wpłaty</p>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">3</div>
-                        <h4>Potwierdź na Discord</h4>
-                        <p>Napisz do mnie na Discord z potwierdzeniem wpłaty</p>
-                    </div>
-                    <div class="step">
-                        <div class="step-number">4</div>
-                        <h4>Odbierz usługę</h4>
-                        <p>Otrzymasz dostęp do usługi w ciągu 1-24 godzin</p>
-                    </div>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h2>Wesprzyj moją pracę 💝</h2>
+                <p>Każda darowizna pomaga mi tworzyć więcej darmowych projektów, pluginów Minecraft i pomagać społeczności</p>
+                <div class="tipply-badge">
+                    <i class="fas fa-shield-alt"></i>
+                    Bezpieczne płatności przez Tipply.pl
                 </div>
             </div>
+        </div>
+    </section>
 
-            <!-- Services Cards -->
-            <div class="cards">
+    <!-- How It Works -->
+    <section class="how-it-works">
+        <div class="container">
+            <div class="section-title">
+                <h3>Jak to działa? 🤔</h3>
+                <p>Prosty proces w 4 krokach</p>
+            </div>
+            
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h4>Wybierz usługę</h4>
+                    <p>Wybierz jedną z moich usług lub wpisz własną kwotę</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h4>Wpłać przez Tipply</h4>
+                    <p>Zostaniesz przekierowany na bezpieczną stronę płatności</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h4>Potwierdź na Discord</h4>
+                    <p>Napisz do mnie na Discord z potwierdzeniem wpłaty</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h4>Odbierz usługę</h4>
+                    <p>Otrzymasz dostęp do usługi w ciągu 1-24 godzin ⚡</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section class="services">
+        <div class="container">
+            <div class="section-title">
+                <h3>Moje Usługi 🛠️</h3>
+                <p>Wybierz usługę i wesprzyj moją pracę</p>
+            </div>
+            
+            <div class="services-grid">
                 <!-- Plugin Minecraft -->
-                <div class="card fade-in">
-                    <div class="card-image">
+                <div class="service-card">
+                    <div class="service-icon">
                         <i class="fas fa-cube"></i>
                     </div>
-                    <h3>Plugin Minecraft</h3>
-                    <p>Custom plugin z GUI, zaawansowanymi systemami, custom commands i eventami</p>
-                    <div class="card-price">50 zł</div>
-                    <button class="buy-btn pulse" onclick="buyService('plugin', 50, 'Plugin Minecraft')">
+                    <h4>Plugin Minecraft</h4>
+                    <p>Custom plugin z GUI, zaawansowanymi systemami, custom commands, eventy i więcej</p>
+                    <div class="service-price">50 zł</div>
+                    <button class="donate-btn featured" onclick="startDonation('plugin', 50, 'Plugin Minecraft')">
                         <i class="fas fa-heart"></i> Wesprzyj 50 zł
                     </button>
                 </div>
 
                 <!-- Skrypty Skript -->
-                <div class="card fade-in">
-                    <div class="card-image">
+                <div class="service-card">
+                    <div class="service-icon">
                         <i class="fas fa-code"></i>
                     </div>
-                    <h3>Skrypty Skript</h3>
+                    <h4>Skrypty Skript</h4>
                     <p>Zaawansowane skrypty: rangi, eventy, systemy nagród, questy, custom mechaniki</p>
-                    <div class="card-price">30 zł</div>
-                    <button class="buy-btn" onclick="buyService('skript', 30, 'Skrypty Skript')">
+                    <div class="service-price">30 zł</div>
+                    <button class="donate-btn" onclick="startDonation('skript', 30, 'Skrypty Skript')">
                         <i class="fas fa-heart"></i> Wesprzyj 30 zł
                     </button>
                 </div>
 
                 <!-- Strona WWW -->
-                <div class="card fade-in">
-                    <div class="card-image">
+                <div class="service-card">
+                    <div class="service-icon">
                         <i class="fas fa-globe"></i>
                     </div>
-                    <h3>Strona WWW</h3>
-                    <p>Profesjonalna strona portfolio lub sklep internetowy z panelem administracyjnym</p>
-                    <div class="card-price">90 zł</div>
-                    <button class="buy-btn" onclick="buyService('www', 90, 'Strona WWW')">
+                    <h4>Strona WWW</h4>
+                    <p>Profesjonalna strona portfolio lub sklep internetowy z panelem admina</p>
+                    <div class="service-price">90 zł</div>
+                    <button class="donate-btn" onclick="startDonation('www', 90, 'Strona WWW')">
                         <i class="fas fa-heart"></i> Wesprzyj 90 zł
                     </button>
                 </div>
 
                 <!-- Montaż wideo -->
-                <div class="card fade-in">
-                    <div class="card-image">
+                <div class="service-card">
+                    <div class="service-icon">
                         <i class="fas fa-video"></i>
                     </div>
-                    <h3>Montaż wideo</h3>
+                    <h4>Montaż wideo</h4>
                     <p>Profesjonalny montaż video (1 sekunda = 0,01 zł, minimalnie 1 minuta)</p>
-                    <div class="card-price">od 0,60 zł</div>
-                    <button class="buy-btn" onclick="buyService('video', 60, 'Montaż wideo (1 min)')">
+                    <div class="service-price">od 0,60 zł</div>
+                    <button class="donate-btn" onclick="startDonation('video', 60, 'Montaż wideo (1 min)')">
                         <i class="fas fa-heart"></i> Wesprzyj 60 zł
                     </button>
                 </div>
             </div>
-
+            
             <!-- Custom Donation -->
-            <div class="custom-donation fade-in">
-                <h3>💰 Własna kwota</h3>
-                <p>Chcesz wesprzeć inną kwotą? Wpisz poniżej:</p>
+            <div class="custom-donation">
+                <h4>💰 Własna kwota</h4>
+                <p>Chcesz wesprzeć inną kwotą? Żaden problem!</p>
                 
-                <div class="amount-input">
-                    <input type="number" id="customAmount" placeholder="np. 150" min="5" max="10000">
-                    <span class="currency">zł</span>
+                <div class="amount-input-container">
+                    <div class="amount-input">
+                        <input type="number" id="customAmount" placeholder="np. 150" min="5" max="10000">
+                        <span class="currency">zł</span>
+                    </div>
                 </div>
                 
-                <small style="color: #888; display: block; margin: 0.5rem 0 1.5rem;">Minimalna kwota: 5 zł</small>
+                <small style="color: #888; display: block; margin-bottom: 2rem;">Minimalna kwota: 5 zł</small>
                 
-                <button class="custom-btn" onclick="buyCustomService()">
+                <button class="custom-btn" onclick="startCustomDonation()">
                     <i class="fas fa-gift"></i> Wesprzyj własną kwotą
                 </button>
             </div>
-        </section>
-    </main>
+        </div>
+    </section>
 
-    <!-- Footer -->
-    <footer>
+    <!-- Testimonials -->
+    <section class="testimonials">
         <div class="container">
-            <div class="footer-logo">Vorexan</div>
-            <p>Game Development & Programming Services</p>
-            
-            <div class="social-links">
-                <a href="https://discord.com/users/TWOJE_ID_DISCORD" title="Discord" target="_blank">
-                    <i class="fab fa-discord"></i>
-                </a>
-                <a href="https://github.com/vorexan" title="GitHub" target="_blank">
-                    <i class="fab fa-github"></i>
-                </a>
-                <a href="https://twitter.com/vorexan" title="Twitter" target="_blank">
-                    <i class="fab fa-twitter"></i>
-                </a>
-                <a href="https://youtube.com/@vorexan" title="YouTube" target="_blank">
-                    <i class="fab fa-youtube"></i>
-                </a>
+            <div class="section-title">
+                <h3>Co mówią klienci? 😊</h3>
+                <p>Opinie osób które już skorzystały z moich usług</p>
             </div>
             
-            <p class="copyright">
-                © 2024 Vorexan. Wszystkie prawa zastrzeżone.<br>
-                Płatności obsługiwane przez <a href="https://tipply.pl/@vorexanstore" style="color: #667eea;">Tipply.pl</a>
-            </p>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        Świetny plugin! Działa perfekcyjnie, a Vorexan pomógł przy konfiguracji. Polecam!
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">MK</div>
+                        <div class="author-info">
+                            <h5>MinecraftKing</h5>
+                            <p>Plugin Minecraft + konfiguracja</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        Skrypt działa idealnie, szybka realizacja. Na pewno jeszcze skorzystam!
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">SG</div>
+                        <div class="author-info">
+                            <h5>ServerGuru</h5>
+                            <p>Skrypty Skript - system rang</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        Strona wygląda profesjonalnie, wszystko działa szybko. Bardzo polecam usługi!
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">BS</div>
+                        <div class="author-info">
+                            <h5>BusinessStart</h5>
+                            <p>Strona WWW portfolio</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h5>Vorexan</h5>
+                    <p style="color: #b0b0b0; margin-bottom: 1.5rem;">
+                        Game Developer & Programista specjalizujący się w Minecraft i tworzeniu stron WWW.
+                    </p>
+                    <div class="social-links">
+                        <a href="https://discord.com/users/TWOJE_ID" class="social-link" target="_blank">
+                            <i class="fab fa-discord"></i>
+                        </a>
+                        <a href="https://github.com/vorexan" class="social-link" target="_blank">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="https://twitter.com/vorexan" class="social-link" target="_blank">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="https://youtube.com/@vorexan" class="social-link" target="_blank">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-column">
+                    <h5>Usługi</h5>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fas fa-cube"></i> Plugin Minecraft</a></li>
+                        <li><a href="#"><i class="fas fa-code"></i> Skrypty Skript</a></li>
+                        <li><a href="#"><i class="fas fa-globe"></i> Strona WWW</a></li>
+                        <li><a href="#"><i class="fas fa-video"></i> Montaż wideo</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-column">
+                    <h5>Kontakt</h5>
+                    <ul class="footer-links">
+                        <li><a href="https://discord.com/users/TWOJE_ID" target="_blank"><i class="fab fa-discord"></i> Discord: vorexan</a></li>
+                        <li><a href="mailto:contact@vorexan.pl"><i class="fas fa-envelope"></i> contact@vorexan.pl</a></li>
+                        <li><a href="https://tipply.pl/@vorexanstore" target="_blank"><i class="fas fa-heart"></i> Tipply.pl</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>© 2024 Vorexan. Wszystkie prawa zastrzeżone.</p>
+                <p style="margin-top: 0.5rem;">Płatności obsługiwane przez <a href="https://tipply.pl/@vorexanstore" style="color: #667eea;">Tipply.pl</a></p>
+            </div>
         </div>
     </footer>
 
-    <!-- Modal with Instructions -->
-    <div class="modal" id="instructionsModal">
+    <!-- Modal -->
+    <div class="modal" id="donationModal">
         <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-icon">
-                    <i class="fas fa-info-circle"></i>
-                </div>
-                <h2>📋 Instrukcja po wpłacie</h2>
+            <button class="close-modal" onclick="closeModal()">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="modal-icon">
+                <i class="fas fa-info-circle"></i>
             </div>
+            
+            <h3>📋 Instrukcja po wpłacie</h3>
             
             <div class="modal-instructions">
                 <ol>
-                    <li><strong>Zostałeś przekierowany na Tipply</strong> - dokonaj wpłaty wybranej kwoty</li>
-                    <li><strong>Napisz na Discord</strong> do <code>vorexan</code> z informacją:</li>
-                    <ul style="margin: 0.5rem 0 0.5rem 1.5rem; color: #b0b0b0;">
-                        <li>Usługa: <span id="modalServiceName"></span></li>
+                    <li><strong>Zostałeś przekierowany na Tipply</strong><br>
+                    Dokonaj wpłaty wybranej kwoty przez bezpieczny system Tipply.pl</li>
+                    
+                    <li><strong>Napisz na Discord</strong><br>
+                    Wyślij wiadomość do <span class="highlight">vorexan</span> z informacją:</li>
+                    <ul style="margin: 0.5rem 0 0.5rem 2rem; color: #b0b0b0;">
+                        <li>Usługa: <span id="modalService"></span></li>
                         <li>Kwota: <span id="modalAmount"></span> zł</li>
                         <li>Twój nick z Tipply (jeśli inny)</li>
                     </ul>
-                    <li><strong>Otrzymasz dostęp do usługi</strong> w ciągu 1-24 godzin</li>
+                    
+                    <li><strong>Otrzymasz dostęp do usługi</strong><br>
+                    W ciągu <span class="highlight">1-24 godzin</span> od potwierdzenia</li>
                 </ol>
             </div>
             
-            <div class="modal-buttons">
-                <a href="https://tipply.pl/@vorexanstore" class="modal-btn modal-btn-primary" target="_blank" id="modalTipplyLink">
+            <div class="modal-actions">
+                <a href="https://tipply.pl/@vorexanstore" class="modal-btn primary" id="modalTipplyLink" target="_blank">
                     <i class="fas fa-external-link-alt"></i> Przejdź do Tipply
                 </a>
-                <button class="modal-btn modal-btn-secondary" onclick="closeModal()">
+                <button class="modal-btn secondary" onclick="closeModal()">
                     <i class="fas fa-times"></i> Zamknij
                 </button>
             </div>
@@ -677,11 +1027,11 @@
     <script>
         // Konfiguracja
         const TIPPLY_URL = "https://tipply.pl/@vorexanstore";
-        const DISCORD_URL = "https://discord.com/users/TWOJE_ID_DISCORD";
+        const DISCORD_URL = "https://discord.com/users/TWOJE_ID";
         
-        // Funkcje
-        function buyService(service, amount, name) {
-            // Zapisz wybór w localStorage
+        // Funkcje donacji
+        function startDonation(service, amount, name) {
+            // Zapisz dane w localStorage
             const donationData = {
                 service: service,
                 amount: amount,
@@ -691,24 +1041,21 @@
             };
             
             localStorage.setItem('lastDonation', JSON.stringify(donationData));
-            localStorage.setItem('donationService', service);
-            localStorage.setItem('donationAmount', amount);
-            localStorage.setItem('donationName', name);
             
             // Pokaż modal z instrukcjami
-            showInstructions(amount, name);
+            showDonationModal(amount, name);
             
-            // Opcjonalnie: wyślij tracking do API
-            sendTracking(service, amount, name);
+            // Wyślij tracking (opcjonalnie)
+            trackDonation(service, amount, name);
         }
         
-        function buyCustomService() {
-            const customInput = document.getElementById('customAmount');
-            const amount = parseInt(customInput.value);
+        function startCustomDonation() {
+            const input = document.getElementById('customAmount');
+            const amount = parseInt(input.value);
             
             if (!amount || amount < 5) {
                 alert('❌ Proszę podać kwotę minimum 5 zł');
-                customInput.focus();
+                input.focus();
                 return;
             }
             
@@ -719,7 +1066,7 @@
             
             const name = `Własna darowizna (${amount} zł)`;
             
-            // Zapisz w localStorage
+            // Zapisz dane
             const donationData = {
                 service: 'custom',
                 amount: amount,
@@ -729,40 +1076,37 @@
             };
             
             localStorage.setItem('lastDonation', JSON.stringify(donationData));
-            localStorage.setItem('donationService', 'custom');
-            localStorage.setItem('donationAmount', amount);
-            localStorage.setItem('donationName', name);
             
             // Pokaż modal
-            showInstructions(amount, name);
+            showDonationModal(amount, name);
             
             // Wyślij tracking
-            sendTracking('custom', amount, 'Custom Donation');
+            trackDonation('custom', amount, 'Custom Donation');
             
             // Wyczyść pole
-            customInput.value = '';
+            input.value = '';
         }
         
-        function showInstructions(amount, serviceName) {
+        function showDonationModal(amount, serviceName) {
             // Ustaw dane w modal
-            document.getElementById('modalServiceName').textContent = serviceName;
+            document.getElementById('modalService').textContent = serviceName;
             document.getElementById('modalAmount').textContent = amount;
             
-            // Ustaw link Tipply z amount w URL (jeśli Tipply to wspiera)
-            const tipplyLink = document.getElementById('modalTipplyLink');
-            tipplyLink.href = TIPPLY_URL; // Możesz dodać ?amount= jeśli Tipply to obsługuje
-            
             // Pokaż modal
-            document.getElementById('instructionsModal').classList.add('show');
+            document.getElementById('donationModal').classList.add('show');
+            
+            // Blokuj scroll body
+            document.body.style.overflow = 'hidden';
         }
         
         function closeModal() {
-            document.getElementById('instructionsModal').classList.remove('show');
+            document.getElementById('donationModal').classList.remove('show');
+            document.body.style.overflow = '';
         }
         
-        async function sendTracking(service, amount, name) {
+        async function trackDonation(service, amount, name) {
             try {
-                // Wyślij do Cloudflare Functions (opcjonalnie)
+                // Wyślij do Cloudflare Functions
                 await fetch('/api/track-donation', {
                     method: 'POST',
                     headers: {
@@ -773,40 +1117,22 @@
                         amount: amount,
                         name: name,
                         timestamp: new Date().toISOString(),
-                        referrer: document.referrer,
+                        url: window.location.href,
                         userAgent: navigator.userAgent
                     })
                 });
             } catch (error) {
-                console.log('Tracking error:', error);
+                console.log('Tracking optional:', error);
             }
         }
         
         // Inicjalizacja strony
         document.addEventListener('DOMContentLoaded', function() {
             // Sprawdź czy użytkownik wrócił z Tipply
-            const lastDonation = localStorage.getItem('lastDonation');
-            if (lastDonation) {
-                const donation = JSON.parse(lastDonation);
-                const now = new Date();
-                const donationTime = new Date(donation.timestamp);
-                const hoursDiff = (now - donationTime) / (1000 * 60 * 60);
-                
-                // Jeśli donation była w ciągu ostatnich 2 godzin
-                if (hoursDiff < 2) {
-                    console.log('Witaj z powrotem! Ostatnio wybrana:', donation.name);
-                    
-                    // Możesz pokazać welcome back message
-                    setTimeout(() => {
-                        if (confirm(`Witaj z powrotem! Ostatnio wybrałeś: ${donation.name} za ${donation.amount} zł.\n\nCzy chcesz przejść do Discorda aby potwierdzić?`)) {
-                            window.open(DISCORD_URL, '_blank');
-                        }
-                    }, 1000);
-                }
-            }
+            checkReturnFromTipply();
             
             // Zamknij modal przy kliknięciu w tło
-            document.getElementById('instructionsModal').addEventListener('click', function(e) {
+            document.getElementById('donationModal').addEventListener('click', function(e) {
                 if (e.target === this) {
                     closeModal();
                 }
@@ -819,30 +1145,65 @@
                 }
             });
             
-            // Animacje
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
-            };
-            
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('fade-in');
-                    }
-                });
-            }, observerOptions);
-            
-            // Obserwuj wszystkie karty
-            document.querySelectorAll('.card').forEach(card => {
-                observer.observe(card);
+            // Focus na custom amount
+            document.getElementById('customAmount').addEventListener('focus', function() {
+                this.select();
             });
+            
+            // Animacje dla kart
+            animateCards();
         });
         
-        // Focus na custom amount input
-        document.getElementById('customAmount').addEventListener('focus', function() {
-            this.select();
-        });
+        function checkReturnFromTipply() {
+            const lastDonation = localStorage.getItem('lastDonation');
+            if (lastDonation) {
+                const donation = JSON.parse(lastDonation);
+                const now = new Date();
+                const donationTime = new Date(donation.timestamp);
+                const minutesDiff = (now - donationTime) / (1000 * 60);
+                
+                // Jeśli donation była w ciągu ostatnich 30 minut
+                if (minutesDiff < 30) {
+                    console.log('Witaj z powrotem z Tipply!');
+                    // Możesz pokazać welcome message
+                }
+            }
+        }
+        
+        function animateCards() {
+            const cards = document.querySelectorAll('.service-card, .step-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }, index * 100);
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                observer.observe(card);
+            });
+        }
+        
+        // Pobierz dane z API (opcjonalnie)
+        async function loadServices() {
+            try {
+                const response = await fetch('/api/services');
+                const data = await response.json();
+                console.log('Loaded services:', data);
+            } catch (error) {
+                // API nie jest wymagane do działania
+            }
+        }
     </script>
 </body>
 </html>
