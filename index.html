@@ -1,73 +1,49 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vorexan Shop</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel Sprzedawcy</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header class="hero">
-  <h1>Vorexan Shop</h1>
-  <p>Game Dev • Minecraft Dev • Projekty</p>
-  <div id="accountSection"></div>
-  <button onclick="toggleCart()">🛒 Koszyk</button>
-</header>
+<div class="seller-container">
 
-<main>
-  <!-- Logowanie / Rejestracja -->
-  <section id="auth">
-    <h2>🔐 Logowanie / Rejestracja</h2>
-    <input id="authEmail" type="email" placeholder="Email">
-    <input id="authPass" type="password" placeholder="Hasło">
-    <input id="authName" type="text" placeholder="Nazwa użytkownika (tylko przy rejestracji)">
-    <div>
-      <button onclick="login()">Zaloguj</button>
-      <button onclick="register()">Zarejestruj</button>
-    </div>
-    <p id="authStatus"></p>
-  </section>
+  <!-- MENU BOCZNE -->
+  <aside class="seller-sidebar">
+    <h2>Panel Sprzedawcy</h2>
+    <button onclick="showSection('orders')">📝 Zamówienia</button>
+    <button onclick="showSection('chat')">💬 Chat</button>
+    <button onclick="showSection('settings')">⚙ Ustawienia</button>
+    <button onclick="logoutSeller()">🚪 Wyloguj</button>
+  </aside>
 
-  <!-- Produkty dla użytkownika -->
-  <section id="productsSection" style="display:none;">
-    <h2>🛍️ Oferta</h2>
-    <div class="products" id="productsContainer">
-      <!-- Produkty wczytane z Firebase -->
-    </div>
-  </section>
+  <!-- GŁÓWNA SEKCJA -->
+  <main class="seller-main">
+    <section id="ordersSection" class="seller-section">
+      <h2>Lista Zamówień</h2>
+      <div id="ordersList"></div>
+    </section>
 
-  <!-- Panel admina -->
-  <section id="adminSection" style="display:none;">
-    <h2>Panel Admina</h2>
+    <section id="chatSection" class="seller-section" style="display:none;">
+      <h2>Chat z klientami</h2>
+      <div id="sellerChatList"></div>
+      <div id="sellerChatWindow" class="chat-window"></div>
+      <div class="chat-input">
+        <input id="sellerChatMessage" placeholder="Napisz wiadomość...">
+        <button onclick="sendSellerMessage()">Wyślij</button>
+      </div>
+    </section>
 
-    <div id="adminButtons">
-      <button onclick="showProductsAdmin()">Produkty</button>
-      <button onclick="showOrdersAdmin()">Zamówienia</button>
-      <button onclick="logout()">Wyloguj się</button>
-    </div>
-
-    <!-- Produkty admin -->
-    <table id="adminProductsTable">
-      <tr><th>Nazwa</th><th>Cena</th><th>Zdjęcie</th></tr>
-    </table>
-
-    <!-- Zamówienia admin -->
-    <table id="adminOrdersTable" style="display:none;">
-      <tr><th>Data</th><th>Użytkownik</th><th>Produkty</th></tr>
-    </table>
-  </section>
-</main>
-
-<!-- Koszyk -->
-<div id="cart">
-  <h2>Koszyk</h2>
-  <div id="cartItems"></div>
-  <p><b>Suma: <span id="total">0</span> zł</b></p>
-  <button onclick="checkout()">Zamów</button>
-  <button onclick="toggleCart()">Zamknij</button>
+    <section id="settingsSection" class="seller-section" style="display:none;">
+      <h2>Ustawienia konta sprzedawcy</h2>
+      <input id="newSellerPass" type="password" placeholder="Nowe hasło">
+      <button onclick="changeSellerPassword()">Zmień hasło</button>
+    </section>
+  </main>
 </div>
 
-<script type="module" src="script.js"></script>
+<script src="seller.js"></script>
 </body>
 </html>
