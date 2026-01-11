@@ -1,11 +1,20 @@
-# wrangler.toml
-name = "stripe-worker"
-compatibility_date = "2024-01-01"
+name = "vorexan-shop"
+compatibility_date = "2024-12-01"
+pages_build_output_dir = "./public"
 
+# Development/Preview environment
 [vars]
-STRIPE_PUBLIC_KEY = "mk_1SoE4yByRBDz27UP8Gj1DkSr"
-STRIPE_SECRET_KEY = "mk_1SoE5gByRBDz27UPt54qrdxF"
+STRIPE_PUBLIC_KEY = "pk_test_51SoE4xByRBDz27UPXhsO15IsbhnNRESUGaofuUnRuQdIjflU5RPMpXOPw42dUpkEaJ9IJitnJTtWXu2LS8WKY7k900Jb5oTDXY"
+STRIPE_SECRET_KEY = "sk_test_51SoE4xByRBDz27UPgLRqrscopaJktQrdUqAvNgBk6G2RIXezMax4E4XtILRyIheRsfj1QzzZnuGY2UthqU74efFH00iJPnNa3O"
+ENVIRONMENT = "development"
+
+# Production environment
+[env.production]
+name = "vorexan-shop-production"
 
 [env.production.vars]
-STRIPE_PUBLIC_KEY = "mk_1SoE4yByRBDz27UP8Gj1DkSr"
-STRIPE_SECRET_KEY = "mk_1SoE5gByRBDz27UPt54qrdxF"
+# UWAGA: Na razie używaj tych samych kluczy testowych
+# Dopiero po przetestowaniu wszystkiego zmień na klucze live
+STRIPE_PUBLIC_KEY = "pk_test_51SoE4xByRBDz27UPXhsO15IsbhnNRESUGaofuUnRuQdIjflU5RPMpXOPw42dUpkEaJ9IJitnJTtWXu2LS8WKY7k900Jb5oTDXY"
+STRIPE_SECRET_KEY = "sk_test_51SoE4xByRBDz27UPgLRqrscopaJktQrdUqAvNgBk6G2RIXezMax4E4XtILRyIheRsfj1QzzZnuGY2UthqU74efFH00iJPnNa3O"
+ENVIRONMENT = "production"
