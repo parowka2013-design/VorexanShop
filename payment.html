@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Płatność - Vorexan</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
+    
+    <style>
+        /* Payment specific styles */
+        .payment-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .payment-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .payment-header h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .payment-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .payment-steps {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+        
+        .payment-steps::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 50px;
+            right: 50px;
+            height: 2px;
+            background: #ddd;
+            z-index: 1;
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #ddd;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+        
+        .step.active .step-number {
+            background: #4CAF50;
+            color: white;
+            transform: scale(1.1);
+        }
+        
+        .step-label {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .step.active .step-label {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .payment-content {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .payment-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .payment-form {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        
+        .payment-summary {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+        }
+        
+        .form-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            font-size: 1.3rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .payment-method {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .payment-method:hover {
+            border-color: #4CAF50;
+            transform: translateY(-2px);
+        }
+        
+        .payment-method.selected {
+            border-color: #4CAF50;
+            background: rgba(76, 175, 80, 0.05);
+        }
+        
+        .payment-method i {
+            font-size: 24px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .payment-method .method-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .summary-item.total {
+            border-bottom: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }
+        
+        .product-preview {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .product-preview img {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+        
+        .product-info h4 {
+            margin: 0 0 5px 0;
+            color: #333;
+        }
+        
+        .product-info p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .security-badges {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .badge {
+            text-align: center;
+        }
+        
+        .badge i {
+            font-size: 24px;
+            color: #4CAF50;
+            margin-bottom: 5px;
+        }
+        
+        .badge span {
+            display: block;
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .pay-button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .pay-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .pay-button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .pay-button i {
+            font-size: 1.2rem;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .error-message {
+            color: #f44336;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        .success-message {
+            background: #E8F5E9;
+            border: 1px solid #C8E6C9;
+            color: #2E7D32;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .success-message.show {
+            display: block;
+        }
+        
+        .back-button {
+            background: none;
+            border: 2px solid #ddd;
+            color: #666;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .back-button:hover {
+            border-color: #666;
+            color: #333;
+        }
+        
+        .form-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        /* Stripe Elements */
+        .StripeElement {
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+        }
+        
+        .StripeElement--focus {
+            border-color: #4CAF50;
+        }
+        
+        .StripeElement--invalid {
+            border-color: #f44336;
+        }
+        
+        .stripe-container {
+            margin-top: 20px;
+        }
+        
+        .stripe-container.hidden {
+            display: none;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            animation: modalAppear 0.3s ease-out;
+        }
+        
+        @keyframes modalAppear {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        
+        .modal-icon.success {
+            color: #4CAF50;
+        }
+        
+        .modal-icon.error {
+            color: #f44336;
+        }
+        
+        .modal h2 {
+            margin: 0 0 15px 0;
+            color: #333;
+        }
+        
+        .modal p {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        .modal button {
+            padding: 12px 30px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .modal button:hover {
+            background: #2E7D32;
+        }
+        
+        /* Terms checkbox */
+        .terms {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .terms input {
+            margin-top: 3px;
+        }
+        
+        .terms label {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.4;
+        }
+        
+        .terms a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        
+        .terms a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="payment-container">
+    <div class="payment-header">
+        <h1>💳 Finalizuj zamówienie</h1>
+        <p>Wprowadź dane i wybierz metodę płatności</p>
+    </div>
+    
+    <div class="payment-steps">
+        <div class="step active">
+            <div class="step-number">1</div>
+            <span class="step-label">Produkt</span>
+        </div>
+        <div class="step">
+            <div class="step-number">2</div>
+            <span class="step-label">Płatność</span>
+        </div>
+        <div class="step">
+            <div class="step-number">3</div>
+            <span class="step-label">Gotowe!</span>
+        </div>
+    </div>
+    
+    <div class="payment-content">
+        <!-- Lewa kolumna - Formularz -->
+        <div class="payment-form">
+            <div class="success-message" id="successMessage">
+                <i class="fas fa-check-circle"></i> Twoje zamówienie zostało przetworzone! Sprawdź email.
+            </div>
+            
+            <!-- Sekcja danych -->
+            <div class="form-section">
+                <h3>📝 Twoje dane</h3>
+                
+                <div class="form-group">
+                    <label for="email">Adres email *</label>
+                    <input type="email" id="email" placeholder="twoj@email.pl" required>
+                    <div class="error-message" id="emailError">Wprowadź poprawny adres email</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="discord">Discord (opcjonalnie)</label>
+                    <input type="text" id="discord" placeholder="nazwa#0000">
+                    <small style="color: #666; display: block; margin-top: 5px;">Na Discord wyślemy dostęp do produktu</small>
+                </div>
+            </div>
+            
+            <!-- Sekcja płatności -->
+            <div class="form-section">
+                <h3>💳 Metoda płatności</h3>
+                
+                <div class="payment-methods">
+                    <div class="payment-method selected" data-method="card">
+                        <i class="fas fa-credit-card"></i>
+                        <span class="method-name">Karta</span>
+                    </div>
+                    <div class="payment-method" data-method="blik">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span class="method-name">BLIK</span>
+                    </div>
+                    <div class="payment-method" data-method="p24">
+                        <i class="fas fa-university"></i>
+                        <span class="method-name">Przelew24</span>
+                    </div>
+                </div>
+                
+                <!-- Stripe Card Element -->
+                <div class="stripe-container" id="stripeCardContainer">
+                    <div class="form-group">
+                        <label>Dane karty płatniczej</label>
+                        <div id="card-element"></div>
+                        <div class="error-message" id="cardError"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Warunki -->
+            <div class="terms">
+                <input type="checkbox" id="terms" required>
+                <label for="terms">
+                    Akceptuję <a href="#" onclick="showTerms()">regulamin</a> oraz potwierdzam, że produkt jest cyfrowy i nie podlega zwrotowi.
+                    *<br>
+                    <small style="color: #999;">Produkt zostanie dostarczony natychmiast po zaksięgowaniu płatności.</small>
+                </label>
+            </div>
+            
+            <!-- Przyciski -->
+            <div class="form-buttons">
+                <button class="back-button" onclick="goBack()">
+                    <i class="fas fa-arrow-left"></i> Wróć
+                </button>
+                <button class="pay-button" id="payButton" onclick="processPayment()">
+                    <i class="fas fa-lock"></i> Zapłać <span id="amountDisplay"></span>
+                    <div class="loading" id="loadingSpinner" style="display: none;"></div>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Prawa kolumna - Podsumowanie -->
+        <div class="payment-summary">
+            <div class="product-preview">
+                <img id="productImage" src="img/plugin.png" alt="Product">
+                <div class="product-info">
+                    <h4 id="productName">Plugin Minecraft</h4>
+                    <p id="productDescription">Custom plugin (GUI, prace)</p>
+                </div>
+            </div>
+            
+            <div class="summary-item">
+                <span>Cena produktu:</span>
+                <span id="priceBase">50 zł</span>
+            </div>
+            
+            <div class="summary-item">
+                <span>Rabat:</span>
+                <span id="discountValue">-0 zł</span>
+            </div>
+            
+            <div class="summary-item total">
+                <span>Do zapłaty:</span>
+                <span id="totalAmount">50 zł</span>
+            </div>
+            
+            <div class="security-badges">
+                <div class="badge">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Bezpieczna płatność</span>
+                </div>
+                <div class="badge">
+                    <i class="fas fa-bolt"></i>
+                    <span>Natychmiastowy dostęp</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Success -->
+<div class="modal" id="successModal">
+    <div class="modal-content">
+        <div class="modal-icon success">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h2>Płatność zakończona sukcesem! 🎉</h2>
+        <p id="modalMessage">
+            Twoje zamówienie zostało przyjęte. Dostęp do produktu otrzymasz w ciągu kilku minut na podany adres email/Discord.
+        </p>
+        <div style="margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px; text-align: left;">
+            <strong>Nr zamówienia:</strong> <span id="orderNumber"></span><br>
+            <strong>Produkt:</strong> <span id="orderProduct"></span><br>
+            <strong>Email:</strong> <span id="orderEmail"></span>
+        </div>
+        <button onclick="closeModal()">OK, rozumiem</button>
+    </div>
+</div>
+
+<!-- Modal Error -->
+<div class="modal" id="errorModal">
+    <div class="modal-content">
+        <div class="modal-icon error">
+            <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h2>Wystąpił błąd 😕</h2>
+        <p id="errorMessage">Spróbuj ponownie za chwilę.</p>
+        <button onclick="closeModal()">Spróbuj ponownie</button>
+    </div>
+</div>
+
+<!-- Modal Terms -->
+<div class="modal" id="termsModal">
+    <div class="modal-content" style="text-align: left; max-height: 80vh; overflow-y: auto;">
+        <h2>Regulamin sprzedaży produktów cyfrowych</h2>
+        <div style="margin-bottom: 30px;">
+            <h3>§1. Postanowienia ogólne</h3>
+            <p>1.1. Produkty sprzedawane przez Vorexan są produktami cyfrowymi (oprogramowanie, pliki, licencje).</p>
+            <p>1.2. Zakup produktu oznacza akceptację niniejszego regulaminu.</p>
+            
+            <h3>§2. Sposób dostawy</h3>
+            <p>2.1. Produkty cyfrowe dostarczane są natychmiast po zaksięgowaniu płatności.</p>
+            <p>2.2. Dostawa odbywa się poprzez email lub komunikator Discord.</p>
+            
+            <h3>§3. Prawa autorskie</h3>
+            <p>3.1. Vorexan zachowuje prawa autorskie do sprzedawanych produktów.</p>
+            <p>3.2. Kupujący otrzymuje licencję na użytkowanie produktu.</p>
+            
+            <h3>§4. Reklamacje i zwroty</h3>
+            <p>4.1. Produkty cyfrowe nie podlegają zwrotowi zgodnie z art. 38 ustawy o prawach konsumenta.</p>
+            <p>4.2. Reklamacje dotyczące wad technicznych rozpatrywane są w ciągu 14 dni.</p>
+            
+            <h3>§5. Kontakt</h3>
+            <p>Discord: vorexan<br>Email: kontakt@vorexan.pl</p>
+        </div>
+        <div style="text-align: center;">
+            <button onclick="closeModal()">Rozumiem</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Dane produktu z URL
+    const urlParams = new URLSearchParams(window.location.search);
+    let productType = urlParams.get('product') || 'plugin';
+    let productPrice = parseInt(urlParams.get('price')) || 50;
+    let productName = urlParams.get('name') || 'Plugin Minecraft';
+    let productDesc = urlParams.get('desc') || 'Custom plugin (GUI, prace)';
+    let productImage = urlParams.get('img') || 'img/plugin.png';
+    
+    // Konfiguracja Stripe
+    const stripe = Stripe('pk_test_51...'); // Wstaw swój klucz publiczny
+    let elements;
+    let cardElement;
+    
+    // Inicjalizacja strony
+    document.addEventListener('DOMContentLoaded', function() {
+        // Ustaw produkt
+        document.getElementById('productName').textContent = productName;
+        document.getElementById('productDescription').textContent = productDesc;
+        document.getElementById('productImage').src = productImage;
+        document.getElementById('priceBase').textContent = productPrice + ' zł';
+        document.getElementById('totalAmount').textContent = productPrice + ' zł';
+        document.getElementById('amountDisplay').textContent = productPrice + ' zł';
+        
+        // Obsługa zmiany metody płatności
+        document.querySelectorAll('.payment-method').forEach(method => {
+            method.addEventListener('click', function() {
+                document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                const method = this.dataset.method;
+                updatePaymentMethod(method);
+            });
+        });
+        
+        // Inicjalizacja Stripe Elements
+        initializeStripe();
+        
+        // Walidacja formularza
+        setupFormValidation();
+    });
+    
+    // Inicjalizacja Stripe
+    function initializeStripe() {
+        elements = stripe.elements();
+        cardElement = elements.create('card', {
+            style: {
+                base: {
+                    fontSize: '16px',
+                    color: '#32325d',
+                    '::placeholder': {
+                        color: '#aab7c4'
+                    }
+                },
+                invalid: {
+                    color: '#fa755a'
+                }
+            }
+        });
+        cardElement.mount('#card-element');
+        
+        // Obsługa błędów karty
+        cardElement.on('change', function(event) {
+            const displayError = document.getElementById('cardError');
+            if (event.error) {
+                displayError.textContent = event.error.message;
+                displayError.classList.add('show');
+            } else {
+                displayError.classList.remove('show');
+            }
+        });
+    }
+    
+    // Aktualizacja metody płatności
+    function updatePaymentMethod(method) {
+        const cardContainer = document.getElementById('stripeCardContainer');
+        
+        if (method === 'card') {
+            cardContainer.classList.remove('hidden');
+        } else {
+            cardContainer.classList.add('hidden');
+        }
+    }
+    
+    // Walidacja formularza
+    function setupFormValidation() {
+        const emailInput = document.getElementById('email');
+        const termsCheckbox = document.getElementById('terms');
+        const payButton = document.getElementById('payButton');
+        
+        function validateForm() {
+            const emailValid = validateEmail(emailInput.value);
+            const termsAccepted = termsCheckbox.checked;
+            
+            payButton.disabled = !(emailValid && termsAccepted);
+        }
+        
+        emailInput.addEventListener('input', validateForm);
+        termsCheckbox.addEventListener('change', validateForm);
+        
+        validateForm(); // Initial validation
+    }
+    
+    function validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
+    
+    // Proces płatności
+    async function processPayment() {
+        const email = document.getElementById('email').value;
+        const discord = document.getElementById('discord').value;
+        const paymentMethod = document.querySelector('.payment-method.selected').dataset.method;
+        
+        // Walidacja
+        if (!validateEmail(email)) {
+            showError('Wprowadź poprawny adres email');
+            return;
+        }
+        
+        if (!document.getElementById('terms').checked) {
+            showError('Zaakceptuj regulamin');
+            return;
+        }
+        
+        // Pokaż loading
+        const payButton = document.getElementById('payButton');
+        const spinner = document.getElementById('loadingSpinner');
+        payButton.disabled = true;
+        spinner.style.display = 'inline-block';
+        payButton.innerHTML = '<div class="loading"></div> Przetwarzam...';
+        
+        try {
+            // Utwórz sesję płatności na backendzie
+            const response = await fetch('/api/create-checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    product_type: productType,
+                    amount: productPrice * 100, // W groszach
+                    currency: 'pln',
+                    customer_email: email,
+                    customer_discord: discord,
+                    payment_method: paymentMethod,
+                    product_name: productName,
+                    product_description: productDesc,
+                    metadata: {
+                        order_id: generateOrderId(),
+                        product_type: productType,
+                        discord: discord
+                    }
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (!response.ok) {
+                throw new Error(data.error || 'Błąd serwera');
+            }
+            
+            if (paymentMethod === 'card') {
+                // Stripe.js dla karty
+                const result = await stripe.confirmCardPayment(data.client_secret, {
+                    payment_method: {
+                        card: cardElement,
+                        billing_details: {
+                            email: email
+                        }
+                    }
+                });
+                
+                if (result.error) {
+                    throw new Error(result.error.message);
+                }
+                
+                showSuccess(data.order_id, email);
+            } else {
+                // Dla BLIK/Przelew24 - przekieruj do Stripe Checkout
+                window.location.href = data.checkout_url;
+            }
+            
+        } catch (error) {
+            console.error('Payment error:', error);
+            showError(error.message || 'Wystąpił błąd podczas płatności');
+        } finally {
+            // Przywróć przycisk
+            payButton.disabled = false;
+            spinner.style.display = 'none';
+            payButton.innerHTML = '<i class="fas fa-lock"></i> Zapłać ' + productPrice + ' zł';
+        }
+    }
+    
+    // Pokazanie sukcesu
+    function showSuccess(orderId, email) {
+        // Aktualizuj modal
+        document.getElementById('orderNumber').textContent = orderId;
+        document.getElementById('orderProduct').textContent = productName;
+        document.getElementById('orderEmail').textContent = email;
+        
+        // Pokaż modal
+        document.getElementById('successModal').classList.add('show');
+        
+        // Aktualizuj kroki
+        document.querySelectorAll('.step')[0].classList.remove('active');
+        document.querySelectorAll('.step')[1].classList.remove('active');
+        document.querySelectorAll('.step')[2].classList.add('active');
+        document.getElementById('progressBar').style.width = '100%';
+        
+        // Wyślij potwierdzenie (symulacja)
+        sendConfirmation(email, orderId);
+    }
+    
+    // Pokazanie błędu
+    function showError(message) {
+        document.getElementById('errorMessage').textContent = message;
+        document.getElementById('errorModal').classList.add('show');
+    }
+    
+    // Zamknij modal
+    function closeModal() {
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.classList.remove('show');
+        });
+        
+        // Jeśli to był sukces, przekieruj do głównej
+        if (document.getElementById('successModal').classList.contains('show')) {
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 2000);
+        }
+    }
+    
+    // Pokaż regulamin
+    function showTerms() {
+        document.getElementById('termsModal').classList.add('show');
+        return false;
+    }
+    
+    // Wróć do poprzedniej strony
+    function goBack() {
+        window.history.back();
+    }
+    
+    // Przejdź do konta
+    function goAccount() {
+        window.location.href = '/account.html';
+    }
+    
+    // Generuj ID zamówienia
+    function generateOrderId() {
+        return 'VX-' + Date.now() + '-' + Math.random().toString(36).substr(2, 4).toUpperCase();
+    }
+    
+    // Wyślij potwierdzenie (symulacja)
+    function sendConfirmation(email, orderId) {
+        fetch('/api/send-confirmation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: email,
+                order_id: orderId,
+                product_name: productName,
+                product_type: productType,
+                amount: productPrice
+            })
+        }).catch(err => console.error('Email error:', err));
+    }
+    
+    // Funkcje dla Twojego istniejącego sklepu
+    function toggleChat() {
+        const chatBox = document.getElementById('chatBox');
+        chatBox.classList.toggle('hidden');
+    }
+    
+    function sendMessage() {
+        const input = document.getElementById('chatInput');
+        const message = input.value.trim();
+        if (message) {
+            const chatMessages = document.getElementById('chatMessages');
+            const msgDiv = document.createElement('div');
+            msgDiv.textContent = 'Ty: ' + message;
+            chatMessages.appendChild(msgDiv);
+            input.value = '';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+    }
+</script>
+
+</body>
+</html>
