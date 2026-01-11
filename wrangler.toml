@@ -1,20 +1,23 @@
-name = "vorexan-shop"
+name = "vorexan-tipply"
 compatibility_date = "2024-12-01"
 pages_build_output_dir = "./public"
 
-# Development/Preview environment
 [vars]
-STRIPE_PUBLIC_KEY = "pk_test_51SoE4xByRBDz27UPXhsO15IsbhnNRESUGaofuUnRuQdIjflU5RPMpXOPw42dUpkEaJ9IJitnJTtWXu2LS8WKY7k900Jb5oTDXY"
-STRIPE_SECRET_KEY = "sk_test_51SoE4xByRBDz27UPgLRqrscopaJktQrdUqAvNgBk6G2RIXezMax4E4XtILRyIheRsfj1QzzZnuGY2UthqU74efFH00iJPnNa3O"
-ENVIRONMENT = "development"
+ENVIRONMENT = "production"
+SITE_URL = "https://vorexan.pages.dev"
 
-# Production environment
+# Opcjonalne: Konfiguracja KV namespace dla statystyk
+# kv_namespaces = [
+#   { binding = "DONATIONS_KV", id = "your-kv-namespace-id" }
+# ]
+
+# Cloudflare Pages Functions config
+[build]
+command = ""
+publish = "public"
+
 [env.production]
-name = "vorexan-shop-production"
+name = "vorexan-tipply-production"
 
 [env.production.vars]
-# UWAGA: Na razie używaj tych samych kluczy testowych
-# Dopiero po przetestowaniu wszystkiego zmień na klucze live
-STRIPE_PUBLIC_KEY = "pk_test_51SoE4xByRBDz27UPXhsO15IsbhnNRESUGaofuUnRuQdIjflU5RPMpXOPw42dUpkEaJ9IJitnJTtWXu2LS8WKY7k900Jb5oTDXY"
-STRIPE_SECRET_KEY = "sk_test_51SoE4xByRBDz27UPgLRqrscopaJktQrdUqAvNgBk6G2RIXezMax4E4XtILRyIheRsfj1QzzZnuGY2UthqU74efFH00iJPnNa3O"
 ENVIRONMENT = "production"
