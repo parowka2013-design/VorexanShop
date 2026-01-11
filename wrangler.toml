@@ -1,28 +1,11 @@
-export default {
-  async fetch(request, env) {
-    if (request.method !== "POST") {
-      return new Response("Only POST", { status: 405 });
-    }
+# wrangler.toml
+name = "stripe-worker"
+compatibility_date = "2024-01-01"
 
-    const { amount } = await request.json();
+[vars]
+STRIPE_PUBLIC_KEY = "mk_1SoE4yByRBDz27UP8Gj1DkSr"
+STRIPE_SECRET_KEY = "mk_1SoE5gByRBDz27UPt54qrdxF"
 
-    const stripeRes = await fetch("https://api.stripe.com/v1/payment_intents", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${env.STRIPE_SECRET_KEY}`,
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: new URLSearchParams({
-        amount: amount,
-        currency: "pln",
-        automatic_payment_methods: "enabled"
-      })
-    });
-
-    const data = await stripeRes.json();
-
-    return new Response(JSON.stringify(data), {
-      headers: { "Content-Type": "application/json" }
-    });
-  }
-};
+[env.production.vars]
+STRIPE_PUBLIC_KEY = "mk_1SoE4yByRBDz27UP8Gj1DkSr"
+STRIPE_SECRET_KEY = "mk_1SoE5gByRBDz27UPt54qrdxF"
