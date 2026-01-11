@@ -2,461 +2,620 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Płatność - Vorexan</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <link rel="stylesheet" href="style.css">
+    <!-- Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
     <style>
-        /* Payment specific styles - dodaj do istniejącego style.css */
-        .payment-container {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-        
-        .payment-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        
-        .payment-header h1 {
-            color: #2c3e50;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-        
-        .payment-header p {
-            color: #666;
-            font-size: 1.1rem;
-        }
-        
-        .payment-content {
-            display: grid;
-            grid-template-columns: 1fr 350px;
+        .payment-steps {
+            display: flex;
+            justify-content: center;
             gap: 40px;
+            margin: 30px 0;
+            position: relative;
         }
         
-        @media (max-width: 768px) {
-            .payment-content {
-                grid-template-columns: 1fr;
-            }
+        .payment-steps::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 50px;
+            right: 50px;
+            height: 2px;
+            background: #ddd;
+            z-index: 1;
         }
         
-        .payment-form {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-        }
-        
-        .order-summary {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-            height: fit-content;
-            position: sticky;
-            top: 20px;
-        }
-        
-        .form-section {
-            margin-bottom: 30px;
-        }
-        
-        .form-section h3 {
-            color: #2c3e50;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #f0f0f0;
-            font-size: 1.3rem;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #555;
-            font-weight: 500;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-        
-        .form-group input:focus {
-            outline: none;
-            border-color: #3498db;
-        }
-        
-        .order-items {
-            max-height: 300px;
-            overflow-y: auto;
-            margin-bottom: 20px;
-        }
-        
-        .order-item {
+        .step {
             display: flex;
+            flex-direction: column;
             align-items: center;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            gap: 15px;
+            position: relative;
+            z-index: 2;
         }
         
-        .order-item-img {
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-        
-        .order-item-info {
-            flex: 1;
-        }
-        
-        .order-item-name {
-            margin: 0 0 5px 0;
-            font-size: 0.9rem;
-        }
-        
-        .order-item-details {
-            display: flex;
-            justify-content: space-between;
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #ddd;
             color: #666;
-            font-size: 0.85rem;
-        }
-        
-        .order-summary-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .order-total {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #2c3e50;
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 2px solid #eee;
-        }
-        
-        .pay-button {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #27ae60 0%, #219653 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
         
-        .pay-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
-        }
-        
-        .pay-button:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .back-button {
-            background: none;
-            border: 2px solid #ddd;
-            color: #666;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-        
-        .back-button:hover {
-            border-color: #666;
-            color: #333;
-        }
-        
-        .form-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 30px;
-        }
-        
-        .empty-cart-message {
-            text-align: center;
-            padding: 40px 20px;
-            color: #666;
-        }
-        
-        .empty-cart-message i {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            color: #ddd;
-        }
-        
-        .continue-shopping-btn {
-            background: #3498db;
+        .step.active .step-number {
+            background: #27ae60;
             color: white;
-            border: none;
-            padding: 12px 25px;
+        }
+        
+        .step-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .step.active .step-label {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .stripe-element {
+            padding: 12px;
+            border: 2px solid #ddd;
             border-radius: 8px;
-            text-decoration: none;
-            display: inline-block;
-            margin-top: 15px;
+            margin-top: 10px;
+        }
+        
+        .stripe-element--focus {
+            border-color: #3498db;
+        }
+        
+        .stripe-element--invalid {
+            border-color: #e74c3c;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .modal-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        
+        .modal-icon.success {
+            color: #27ae60;
+        }
+        
+        .modal-icon.error {
+            color: #e74c3c;
+        }
+        
+        #paymentProcessing {
+            text-align: center;
+            padding: 20px;
         }
     </style>
 </head>
 <body>
-
-<div class="payment-container">
-    <div class="payment-header">
-        <h1>💳 Finalizuj zamówienie</h1>
-        <p>Podsumowanie Twojego zamówienia</p>
-    </div>
-    
-    <div class="payment-content">
-        <!-- Lewa kolumna - Formularz -->
-        <div class="payment-form">
-            <div id="orderForm">
-                <div class="form-section">
-                    <h3>📝 Twoje dane</h3>
-                    
-                    <div class="form-group">
-                        <label for="email">Adres email *</label>
-                        <input type="email" id="email" placeholder="twoj@email.pl" required>
+    <div class="payment-container">
+        <div class="payment-header">
+            <h1><i class="fas fa-lock"></i> Bezpieczna płatność</h1>
+            <p>Finalizacja zamówienia w Vorexan Shop</p>
+        </div>
+        
+        <div class="payment-steps">
+            <div class="step active">
+                <div class="step-number">1</div>
+                <span class="step-label">Koszyk</span>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <span class="step-label">Dane</span>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <span class="step-label">Płatność</span>
+            </div>
+        </div>
+        
+        <div class="payment-content">
+            <!-- Lewa kolumna - Formularz -->
+            <div class="payment-form">
+                <div id="orderForm">
+                    <div class="form-section">
+                        <h3><i class="fas fa-user"></i> Twoje dane</h3>
+                        
+                        <div class="form-group">
+                            <label for="email">Adres email *</label>
+                            <input type="email" id="email" placeholder="twoj@email.pl" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="discord">Discord (opcjonalnie)</label>
+                            <input type="text" id="discord" placeholder="nazwa#0000">
+                            <small style="color: #666;">Na Discord wyślemy dostęp do produktu</small>
+                        </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="discord">Discord (opcjonalnie)</label>
-                        <input type="text" id="discord" placeholder="nazwa#0000">
-                        <small style="color: #666; display: block; margin-top: 5px;">Na Discord wyślemy dostęp do produktu</small>
+                    <div class="form-section">
+                        <h3><i class="fas fa-credit-card"></i> Metoda płatności</h3>
+                        
+                        <div class="form-group">
+                            <label>Wybierz metodę płatności:</label>
+                            <select id="paymentMethod" class="form-group select">
+                                <option value="card">Karta kredytowa/debetowa</option>
+                                <option value="blik">BLIK</option>
+                                <option value="p24">Przelew online (Przelewy24)</option>
+                            </select>
+                        </div>
+                        
+                        <div id="cardSection" style="display: none;">
+                            <div class="form-group">
+                                <label>Dane karty</label>
+                                <div id="card-element" class="stripe-element"></div>
+                                <div id="card-errors" style="color: #e74c3c; font-size: 0.9rem; margin-top: 5px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="terms" style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                        <input type="checkbox" id="terms" required style="margin-right: 10px;">
+                        <label for="terms" style="font-size: 0.9rem;">
+                            Akceptuję <a href="#" onclick="showTermsModal()">regulamin</a> i potwierdzam, że produkt jest cyfrowy i nie podlega zwrotowi zgodnie z art. 38 ustawy o prawach konsumenta.
+                        </label>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px;">
+                        <button class="btn btn-secondary" onclick="goBack()" style="flex: 1;">
+                            <i class="fas fa-arrow-left"></i> Wróć do sklepu
+                        </button>
+                        <button class="pay-button" id="payButton" onclick="processPayment()" style="flex: 2;">
+                            <i class="fas fa-lock"></i> Zapłać <span id="totalAmountDisplay">0.00 zł</span>
+                        </button>
                     </div>
                 </div>
                 
-                <div class="form-buttons">
-                    <button class="back-button" onclick="goBack()">
-                        <i class="fas fa-arrow-left"></i> Wróć do sklepu
-                    </button>
-                    <button class="pay-button" id="payButton" onclick="processPayment()">
-                        <i class="fas fa-lock"></i> Zapłać <span id="totalAmountDisplay"></span>
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Prawa kolumna - Podsumowanie zamówienia -->
-        <div class="order-summary">
-            <h3>🛒 Twoje zamówienie</h3>
-            
-            <div class="order-items" id="orderItemsContainer">
-                <!-- Produkty będą dodane dynamicznie -->
-            </div>
-            
-            <div id="orderSummary">
-                <div class="order-summary-row">
-                    <span>Suma częściowa:</span>
-                    <span id="subtotalAmount">0.00 zł</span>
-                </div>
-                <div class="order-summary-row">
-                    <span>Rabat:</span>
-                    <span id="discountAmount">0.00 zł</span>
-                </div>
-                <div class="order-total">
-                    <span>Do zapłaty:</span>
-                    <span id="totalAmount">0.00 zł</span>
+                <div id="paymentProcessing" style="display: none;">
+                    <div class="loading" style="width: 50px; height: 50px; margin: 0 auto 20px;"></div>
+                    <h3>Przetwarzanie płatności...</h3>
+                    <p>Proszę nie zamykać tej strony.</p>
                 </div>
             </div>
             
-            <div style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: #666;">
-                <i class="fas fa-shield-alt"></i> Bezpieczna płatność
+            <!-- Prawa kolumna - Podsumowanie -->
+            <div class="order-summary">
+                <h3><i class="fas fa-shopping-cart"></i> Twoje zamówienie</h3>
+                
+                <div class="order-items" id="orderItemsContainer">
+                    <!-- Produkty będą dodane dynamicznie -->
+                </div>
+                
+                <div id="orderSummary">
+                    <div class="order-summary-row">
+                        <span>Suma częściowa:</span>
+                        <span id="subtotalAmount">0.00 zł</span>
+                    </div>
+                    <div class="order-summary-row">
+                        <span>Rabat:</span>
+                        <span id="discountAmount">0.00 zł</span>
+                    </div>
+                    <div class="order-total">
+                        <span>Do zapłaty:</span>
+                        <span id="totalAmount">0.00 zł</span>
+                    </div>
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px; padding: 15px; background: #e8f4f8; border-radius: 8px;">
+                    <i class="fas fa-shield-alt" style="color: #3498db; font-size: 1.5rem; margin-bottom: 10px; display: block;"></i>
+                    <p style="font-size: 0.9rem; color: #2c3e50; margin: 0;">
+                        <strong>Bezpieczna płatność przez Stripe</strong><br>
+                        Twoje dane są szyfrowane i chronione
+                    </p>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    // Pobierz koszyk z URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const cartData = urlParams.get('cart');
-    let cart = [];
-    let totalAmount = 0;
-    
-    // Inicjalizacja strony
-    document.addEventListener('DOMContentLoaded', function() {
-        if (cartData) {
-            cart = JSON.parse(decodeURIComponent(cartData));
-            updateOrderSummary();
-        } else {
-            // Jeśli brak koszyka, pokaż komunikat
-            showEmptyCart();
+    <!-- Modal Sukces -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="modal-icon success">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>Płatność zakończona sukcesem! 🎉</h2>
+            <p id="successMessage">
+                Twoje zamówienie zostało przyjęte. Dostęp do produktu otrzymasz w ciągu kilku minut na podany adres email/Discord.
+            </p>
+            <div style="margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px; text-align: left;">
+                <strong>Nr zamówienia:</strong> <span id="orderNumber">VX-123456</span><br>
+                <strong>Kwota:</strong> <span id="orderAmount">0.00 zł</span><br>
+                <strong>Email:</strong> <span id="orderEmail">test@example.com</span>
+            </div>
+            <button class="btn btn-primary" onclick="closeModalAndRedirect()" style="margin-top: 20px; padding: 12px 30px;">
+                <i class="fas fa-home"></i> Wróć do sklepu
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Błąd -->
+    <div class="modal" id="errorModal">
+        <div class="modal-content">
+            <div class="modal-icon error">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h2>Wystąpił błąd 😕</h2>
+            <p id="errorMessage">Spróbuj ponownie za chwilę.</p>
+            <button class="btn btn-primary" onclick="closeModal()" style="margin-top: 20px;">
+                Spróbuj ponownie
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Regulamin -->
+    <div class="modal" id="termsModal">
+        <div class="modal-content" style="text-align: left; max-height: 80vh; overflow-y: auto;">
+            <h2>📜 Regulamin Vorexan Shop</h2>
+            <div style="margin-bottom: 30px;">
+                <h3>§1. Postanowienia ogólne</h3>
+                <p>1.1. Produkty są cyfrowe i dostarczane natychmiast po zaksięgowaniu płatności.</p>
+                <p>1.2. Zakup oznacza akceptację regulaminu.</p>
+                
+                <h3>§2. Sposób dostawy</h3>
+                <p>2.1. Produkty dostarczane są na email/Discord podany przy zamówieniu.</p>
+                <p>2.2. Czas dostawy: do 24 godzin od zaksięgowania płatności.</p>
+                
+                <h3>§3. Prawa autorskie</h3>
+                <p>3.1. Vorexan zachowuje prawa autorskie do produktów.</p>
+                <p>3.2. Kupujący otrzymuje licencję na użytkowanie produktu.</p>
+                
+                <h3>§4. Reklamacje i zwroty</h3>
+                <p>4.1. Produkty cyfrowe nie podlegają zwrotowi (art. 38 ustawy).</p>
+                <p>4.2. Reklamacje techniczne rozpatrywane w ciągu 14 dni.</p>
+                
+                <h3>§5. Płatności</h3>
+                <p>5.1. Płatności obsługiwane przez Stripe.</p>
+                <p>5.2. Akceptujemy karty, BLIK, Przelewy24.</p>
+                
+                <h3>§6. Kontakt</h3>
+                <p>Discord: vorexan<br>Email: kontakt@vorexan.pl</p>
+            </div>
+            <div style="text-align: center;">
+                <button class="btn btn-primary" onclick="closeModal()">
+                    Rozumiem i akceptuję
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Pobierz dane z URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const cartData = urlParams.get('cart');
+        let cart = [];
+        let totalAmount = 0;
+        let stripe = null;
+        let cardElement = null;
+        
+        // Inicjalizacja strony
+        document.addEventListener('DOMContentLoaded', function() {
+            if (cartData) {
+                try {
+                    cart = JSON.parse(decodeURIComponent(cartData));
+                    updateOrderSummary();
+                } catch (e) {
+                    showError('Błąd w danych koszyka');
+                }
+            } else {
+                showEmptyCart();
+            }
+            
+            // Inicjalizacja Stripe (klucz testowy - zmień na produkcyjny)
+            stripe = Stripe('pk_test_TYJESTPRZYKLADOWYKLUCZ1234567890');
+            
+            // Obsługa zmiany metody płatności
+            document.getElementById('paymentMethod').addEventListener('change', updatePaymentMethod);
+            
+            // Walidacja formularza
+            setupFormValidation();
+            
+            // Inicjalizacja elementu karty Stripe
+            initializeStripeCard();
+        });
+        
+        // Inicjalizacja elementu karty Stripe
+        function initializeStripeCard() {
+            const elements = stripe.elements();
+            cardElement = elements.create('card', {
+                style: {
+                    base: {
+                        fontSize: '16px',
+                        color: '#32325d',
+                        '::placeholder': {
+                            color: '#aab7c4'
+                        }
+                    },
+                    invalid: {
+                        color: '#e74c3c'
+                    }
+                }
+            });
+            cardElement.mount('#card-element');
+            
+            // Obsługa błędów karty
+            cardElement.on('change', function(event) {
+                const displayError = document.getElementById('card-errors');
+                if (event.error) {
+                    displayError.textContent = event.error.message;
+                } else {
+                    displayError.textContent = '';
+                }
+            });
+        }
+        
+        // Aktualizacja podsumowania
+        function updateOrderSummary() {
+            const orderItemsContainer = document.getElementById('orderItemsContainer');
+            const subtotalAmount = document.getElementById('subtotalAmount');
+            const totalAmountElement = document.getElementById('totalAmount');
+            const totalAmountDisplay = document.getElementById('totalAmountDisplay');
+            
+            orderItemsContainer.innerHTML = '';
+            
+            if (cart.length === 0) {
+                showEmptyCart();
+                return;
+            }
+            
+            let subtotal = 0;
+            
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+                
+                const orderItem = document.createElement('div');
+                orderItem.className = 'order-item';
+                orderItem.innerHTML = `
+                    <img src="${item.img}" alt="${item.name}" class="order-item-img" onerror="this.src='images/default.png'">
+                    <div class="order-item-info">
+                        <div class="order-item-name">${item.name}</div>
+                        <div class="order-item-details">
+                            <span>${item.quantity} × ${item.price.toFixed(2)} zł</span>
+                            <span>${itemTotal.toFixed(2)} zł</span>
+                        </div>
+                    </div>
+                `;
+                orderItemsContainer.appendChild(orderItem);
+            });
+            
+            totalAmount = subtotal;
+            
+            subtotalAmount.textContent = subtotal.toFixed(2) + ' zł';
+            totalAmountElement.textContent = totalAmount.toFixed(2) + ' zł';
+            totalAmountDisplay.textContent = totalAmount.toFixed(2) + ' zł';
+        }
+        
+        // Pokaż pusty koszyk
+        function showEmptyCart() {
+            const orderItemsContainer = document.getElementById('orderItemsContainer');
+            const orderSummary = document.getElementById('orderSummary');
+            const orderForm = document.getElementById('orderForm');
+            
+            orderItemsContainer.innerHTML = `
+                <div class="empty-cart-message">
+                    <i class="fas fa-shopping-cart"></i>
+                    <h4>Twój koszyk jest pusty!</h4>
+                    <a href="/" class="continue-shopping-btn">
+                        <i class="fas fa-store"></i> Wróć do sklepu
+                    </a>
+                </div>
+            `;
+            
+            orderSummary.style.display = 'none';
+            orderForm.style.display = 'none';
+        }
+        
+        // Aktualizacja metody płatności
+        function updatePaymentMethod() {
+            const method = document.getElementById('paymentMethod').value;
+            const cardSection = document.getElementById('cardSection');
+            
+            if (method === 'card') {
+                cardSection.style.display = 'block';
+            } else {
+                cardSection.style.display = 'none';
+            }
         }
         
         // Walidacja formularza
-        setupFormValidation();
-    });
-    
-    // Zaktualizuj podsumowanie zamówienia
-    function updateOrderSummary() {
-        const orderItemsContainer = document.getElementById('orderItemsContainer');
-        const subtotalAmount = document.getElementById('subtotalAmount');
-        const totalAmountElement = document.getElementById('totalAmount');
-        const totalAmountDisplay = document.getElementById('totalAmountDisplay');
-        
-        // Wyczyść kontener
-        orderItemsContainer.innerHTML = '';
-        
-        if (cart.length === 0) {
-            showEmptyCart();
-            return;
-        }
-        
-        // Oblicz sumy
-        let subtotal = 0;
-        
-        // Dodaj produkty do podsumowania
-        cart.forEach(item => {
-            const itemTotal = item.price * item.quantity;
-            subtotal += itemTotal;
+        function setupFormValidation() {
+            const emailInput = document.getElementById('email');
+            const payButton = document.getElementById('payButton');
             
-            const orderItem = document.createElement('div');
-            orderItem.className = 'order-item';
-            orderItem.innerHTML = `
-                <img src="${item.img}" alt="${item.name}" class="order-item-img" onerror="this.src='images/default.png'">
-                <div class="order-item-info">
-                    <div class="order-item-name">${item.name}</div>
-                    <div class="order-item-details">
-                        <span>${item.quantity} × ${item.price.toFixed(2)} zł</span>
-                        <span>${itemTotal.toFixed(2)} zł</span>
-                    </div>
-                </div>
-            `;
-            orderItemsContainer.appendChild(orderItem);
-        });
-        
-        // Aktualizuj kwoty
-        totalAmount = subtotal; // Tutaj możesz dodać rabaty, podatki itp.
-        
-        subtotalAmount.textContent = subtotal.toFixed(2) + ' zł';
-        totalAmountElement.textContent = totalAmount.toFixed(2) + ' zł';
-        totalAmountDisplay.textContent = totalAmount.toFixed(2) + ' zł';
-    }
-    
-    // Pokaż komunikat o pustym koszyku
-    function showEmptyCart() {
-        const orderItemsContainer = document.getElementById('orderItemsContainer');
-        const orderSummary = document.getElementById('orderSummary');
-        const orderForm = document.getElementById('orderForm');
-        
-        orderItemsContainer.innerHTML = `
-            <div class="empty-cart-message">
-                <i class="fas fa-shopping-cart"></i>
-                <p>Twój koszyk jest pusty!</p>
-                <a href="/" class="continue-shopping-btn">
-                    <i class="fas fa-store"></i> Wróć do sklepu
-                </a>
-            </div>
-        `;
-        
-        orderSummary.style.display = 'none';
-        orderForm.style.display = 'none';
-    }
-    
-    // Walidacja formularza
-    function setupFormValidation() {
-        const emailInput = document.getElementById('email');
-        const payButton = document.getElementById('payButton');
-        
-        function validateForm() {
-            const emailValid = validateEmail(emailInput.value);
-            payButton.disabled = !emailValid || cart.length === 0;
+            function validateForm() {
+                const emailValid = validateEmail(emailInput.value);
+                const termsAccepted = document.getElementById('terms').checked;
+                const cartNotEmpty = cart.length > 0;
+                
+                payButton.disabled = !(emailValid && termsAccepted && cartNotEmpty);
+            }
+            
+            emailInput.addEventListener('input', validateForm);
+            document.getElementById('terms').addEventListener('change', validateForm);
+            validateForm();
         }
         
-        emailInput.addEventListener('input', validateForm);
-        validateForm(); // Initial validation
-    }
-    
-    function validateEmail(email) {
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return re.test(email);
-    }
-    
-    // Proces płatności (symulacja)
-    function processPayment() {
-        const email = document.getElementById('email').value;
-        const discord = document.getElementById('discord').value;
-        
-        if (!validateEmail(email)) {
-            alert('Wprowadź poprawny adres email');
-            return;
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
         }
         
-        if (cart.length === 0) {
-            alert('Koszyk jest pusty!');
-            return;
+        // Proces płatności
+        async function processPayment() {
+            const email = document.getElementById('email').value;
+            const discord = document.getElementById('discord').value;
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            
+            if (!validateEmail(email)) {
+                showError('Wprowadź poprawny adres email');
+                return;
+            }
+            
+            if (!document.getElementById('terms').checked) {
+                showError('Zaakceptuj regulamin');
+                return;
+            }
+            
+            if (cart.length === 0) {
+                showError('Koszyk jest pusty');
+                return;
+            }
+            
+            // Pokaż loading
+            document.getElementById('orderForm').style.display = 'none';
+            document.getElementById('paymentProcessing').style.display = 'block';
+            
+            try {
+                // Utwórz zamówienie na backendzie
+                const orderId = 'VX-' + Date.now() + '-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+                
+                // Tutaj będzie prawdziwe wywołanie API do Cloudflare Functions
+                // Na razie symulacja
+                
+                if (paymentMethod === 'card') {
+                    // Płatność kartą przez Stripe
+                    const { paymentMethod, error } = await stripe.createPaymentMethod({
+                        type: 'card',
+                        card: cardElement,
+                        billing_details: {
+                            email: email
+                        }
+                    });
+                    
+                    if (error) {
+                        throw new Error(error.message);
+                    }
+                    
+                    // Tutaj wyślij paymentMethod.id do swojego backendu
+                    // const response = await fetch('/api/create-payment', {
+                    //     method: 'POST',
+                    //     headers: { 'Content-Type': 'application/json' },
+                    //     body: JSON.stringify({
+                    //         paymentMethodId: paymentMethod.id,
+                    //         amount: totalAmount * 100,
+                    //         currency: 'pln',
+                    //         email: email,
+                    //         discord: discord,
+                    //         cart: cart,
+                    //         orderId: orderId
+                    //     })
+                    // });
+                    
+                    // Symulacja sukcesu
+                    setTimeout(() => {
+                        showSuccess(orderId, email, totalAmount);
+                    }, 2000);
+                    
+                } else {
+                    // Dla BLIK/Przelew24 przekieruj do Stripe Checkout
+                    // const response = await fetch('/api/create-checkout-session', {
+                    //     method: 'POST',
+                    //     headers: { 'Content-Type': 'application/json' },
+                    //     body: JSON.stringify({
+                    //         amount: totalAmount * 100,
+                    //         currency: 'pln',
+                    //         email: email,
+                    //         cart: cart,
+                    //         orderId: orderId,
+                    //         paymentMethod: paymentMethod
+                    //     })
+                    // });
+                    
+                    // const session = await response.json();
+                    // window.location.href = session.url;
+                    
+                    // Symulacja
+                    setTimeout(() => {
+                        showSuccess(orderId, email, totalAmount);
+                    }, 2000);
+                }
+                
+            } catch (error) {
+                console.error('Payment error:', error);
+                showError(error.message || 'Wystąpił błąd podczas płatności');
+                document.getElementById('orderForm').style.display = 'block';
+                document.getElementById('paymentProcessing').style.display = 'none';
+            }
         }
         
-        // Pokaż loading
-        const payButton = document.getElementById('payButton');
-        const originalText = payButton.innerHTML;
-        payButton.disabled = true;
-        payButton.innerHTML = '<div class="loading"></div> Przetwarzam...';
-        
-        // Symulacja procesu płatności
-        setTimeout(() => {
-            // Tutaj będzie prawdziwa integracja z Stripe
-            // Na razie symulujemy sukces
+        // Pokaż sukces
+        function showSuccess(orderId, email, amount) {
+            document.getElementById('orderNumber').textContent = orderId;
+            document.getElementById('orderEmail').textContent = email;
+            document.getElementById('orderAmount').textContent = amount.toFixed(2) + ' zł';
             
             // Wyczyść koszyk
-            localStorage.removeItem('cart');
+            localStorage.removeItem('vorexan_cart');
             
-            // Pokaż sukces
-            alert(`✅ Płatność zakończona sukcesem!\n\nZamówienie o wartości ${totalAmount.toFixed(2)} zł zostało przyjęte.\nDostęp do produktów otrzymasz na:\nEmail: ${email}\n${discord ? 'Discord: ' + discord : ''}\n\nDziękujemy za zakupy!`);
-            
-            // Przekieruj do głównej strony
+            // Pokaż modal
+            document.getElementById('successModal').classList.add('show');
+        }
+        
+        // Pokaż błąd
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorModal').classList.add('show');
+        }
+        
+        // Zamknij modal
+        function closeModal() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.classList.remove('show');
+            });
+        }
+        
+        // Zamknij modal i przekieruj
+        function closeModalAndRedirect() {
+            closeModal();
             window.location.href = '/';
-            
-        }, 2000);
-    }
-    
-    // Wróć do poprzedniej strony
-    function goBack() {
-        window.history.back();
-    }
-</script>
-
+        }
+        
+        // Pokaż modal z regulaminem
+        function showTermsModal() {
+            document.getElementById('termsModal').classList.add('show');
+        }
+        
+        // Wróć do sklepu
+        function goBack() {
+            window.location.href = '/';
+        }
+    </script>
 </body>
 </html>
