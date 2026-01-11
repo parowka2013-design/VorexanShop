@@ -3,175 +3,846 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vorexan - Game Dev & Programista</title>
+    <title>Vorexan - Usługi Programistyczne</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* HEADER */
+        header.hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 3rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header.hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" preserveAspectRatio="none"><path d="M0,0 L1000,0 L1000,100 L0,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+            opacity: 0.1;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(45deg, #fff, #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        header p {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+        }
+        
+        .discord-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #5865F2;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s;
+        }
+        
+        .discord-badge:hover {
+            transform: translateY(-2px);
+            background: #4752C4;
+        }
+        
+        /* SERVICES */
+        .services {
+            padding: 4rem 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title h2 {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .section-title p {
+            font-size: 1.2rem;
+            color: #b0b0b0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* TIPPLY INFO */
+        .tipply-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .tipply-info h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+        
+        .tipply-info h3 i {
+            color: #00c853;
+        }
+        
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .step {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        /* CARDS */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .card:hover {
+            transform: translateY(-10px);
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+        
+        .card-image {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 1.5rem;
+            border-radius: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+        }
+        
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+        
+        .card p {
+            color: #b0b0b0;
+            margin-bottom: 1.5rem;
+            min-height: 80px;
+        }
+        
+        .card-price {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #00c853;
+            margin-bottom: 1.5rem;
+        }
+        
+        .buy-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+        }
+        
+        .buy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* CUSTOM DONATION */
+        .custom-donation {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 3rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .custom-donation h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+        
+        .amount-input {
+            display: flex;
+            max-width: 300px;
+            margin: 1.5rem auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .amount-input input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 1rem;
+            font-size: 1.2rem;
+            color: white;
+            text-align: center;
+        }
+        
+        .amount-input .currency {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 1rem;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .custom-btn {
+            background: linear-gradient(135deg, #00c853 0%, #00e676 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .custom-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 200, 83, 0.4);
+        }
+        
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 3rem 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 4rem;
+        }
+        
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .social-links a {
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+        
+        .social-links a:hover {
+            background: #667eea;
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 2rem;
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .process-steps {
+                grid-template-columns: 1fr;
+            }
+            
+            .section-title h2 {
+                font-size: 2.2rem;
+            }
+        }
+        
+        /* ANIMATIONS */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .modal.show {
+            display: flex;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .modal-icon {
+            font-size: 4rem;
+            color: #00c853;
+            margin-bottom: 1rem;
+        }
+        
+        .modal h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+        
+        .modal-instructions {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #667eea;
+        }
+        
+        .modal-instructions ol {
+            margin-left: 1.5rem;
+            color: #b0b0b0;
+        }
+        
+        .modal-instructions li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .modal-btn {
+            flex: 1;
+            padding: 1rem;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .modal-btn-primary {
+            background: #667eea;
+            color: white;
+            border: none;
+        }
+        
+        .modal-btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .modal-btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
     <header class="hero">
         <div class="container">
             <div class="hero-content">
-                <div class="brand">
-                    <h1>Vorexan</h1>
-                    <p>Game Dev <span class="highlight">•</span> Programista <span class="highlight">•</span> Minecraft Dev</p>
-                </div>
-                <div class="top-buttons">
-                    <button class="btn btn-primary" onclick="goAccount()">
-                        <i class="fas fa-user"></i> Konto
-                    </button>
-                    <button class="cart-icon-btn" id="cartIconBtn">
-                        <i class="fas fa-shopping-cart"></i>
-                        Koszyk
-                        <span class="cart-count" id="cartCount">0</span>
-                    </button>
-                </div>
+                <h1>Vorexan</h1>
+                <p>Game Dev • Programista • Minecraft Developer</p>
+                <a href="https://discord.com/users/TWOJE_ID_DISCORD" class="discord-badge" target="_blank">
+                    <i class="fab fa-discord"></i> Discord: vorexan
+                </a>
             </div>
         </div>
     </header>
 
     <!-- Main Content -->
     <main class="container">
-        <section class="offers">
-            <div class="section-title">
-                <h2>🎯 Moja Oferta</h2>
-                <p>Profesjonalne usługi programistyczne i gamingowe</p>
+        <section class="services">
+            <div class="section-title fade-in">
+                <h2>🎯 Moje Usługi</h2>
+                <p>Wybierz usługę i wesprzyj moją pracę poprzez Tipply</p>
             </div>
-            
+
+            <!-- Tipply Process Info -->
+            <div class="tipply-info fade-in">
+                <h3><i class="fas fa-info-circle"></i> Jak to działa?</h3>
+                <p>Wspierasz moją pracę poprzez Tipply, a ja dostarczam wybraną usługę!</p>
+                
+                <div class="process-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h4>Wybierz usługę</h4>
+                        <p>Kliknij przycisk "Wesprzyj" przy wybranej usłudze</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h4>Wpłać przez Tipply</h4>
+                        <p>Zostaniesz przekierowany na Tipply.pl aby dokonać wpłaty</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h4>Potwierdź na Discord</h4>
+                        <p>Napisz do mnie na Discord z potwierdzeniem wpłaty</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <h4>Odbierz usługę</h4>
+                        <p>Otrzymasz dostęp do usługi w ciągu 1-24 godzin</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services Cards -->
             <div class="cards">
                 <!-- Plugin Minecraft -->
-                <div class="card" data-product="plugin" data-price="50" data-name="Plugin Minecraft" data-desc="Custom plugin z GUI i zaawansowanymi funkcjami">
-                    <img src="images/plugin.png" alt="Plugin Minecraft" onerror="this.src='images/default.png'">
-                    <div class="card-content">
-                        <h3>Plugin Minecraft</h3>
-                        <p>Custom plugin (GUI, systemy, custom commands)</p>
-                        <div class="card-price">50 zł</div>
-                        <button class="add-to-cart-btn" onclick="addToCart(this)">
-                            <i class="fas fa-cart-plus"></i> Dodaj do koszyka
-                        </button>
+                <div class="card fade-in">
+                    <div class="card-image">
+                        <i class="fas fa-cube"></i>
                     </div>
+                    <h3>Plugin Minecraft</h3>
+                    <p>Custom plugin z GUI, zaawansowanymi systemami, custom commands i eventami</p>
+                    <div class="card-price">50 zł</div>
+                    <button class="buy-btn pulse" onclick="buyService('plugin', 50, 'Plugin Minecraft')">
+                        <i class="fas fa-heart"></i> Wesprzyj 50 zł
+                    </button>
                 </div>
 
                 <!-- Skrypty Skript -->
-                <div class="card" data-product="skript" data-price="30" data-name="Skrypty Skript" data-desc="Zaawansowane skrypty na serwer">
-                    <img src="images/skript.png" alt="Skrypty Skript" onerror="this.src='images/default.png'">
-                    <div class="card-content">
-                        <h3>Skrypty Skript</h3>
-                        <p>Rangi, eventy, systemy nagród</p>
-                        <div class="card-price">30 zł</div>
-                        <button class="add-to-cart-btn" onclick="addToCart(this)">
-                            <i class="fas fa-cart-plus"></i> Dodaj do koszyka
-                        </button>
+                <div class="card fade-in">
+                    <div class="card-image">
+                        <i class="fas fa-code"></i>
                     </div>
+                    <h3>Skrypty Skript</h3>
+                    <p>Zaawansowane skrypty: rangi, eventy, systemy nagród, questy, custom mechaniki</p>
+                    <div class="card-price">30 zł</div>
+                    <button class="buy-btn" onclick="buyService('skript', 30, 'Skrypty Skript')">
+                        <i class="fas fa-heart"></i> Wesprzyj 30 zł
+                    </button>
                 </div>
 
                 <!-- Strona WWW -->
-                <div class="card" data-product="www" data-price="90" data-name="Strona WWW" data-desc="Profesjonalna strona internetowa">
-                    <img src="images/www.png" alt="Strona WWW" onerror="this.src='images/default.png'">
-                    <div class="card-content">
-                        <h3>Strona WWW</h3>
-                        <p>Portfolio lub sklep internetowy</p>
-                        <div class="card-price">90 zł</div>
-                        <button class="add-to-cart-btn" onclick="addToCart(this)">
-                            <i class="fas fa-cart-plus"></i> Dodaj do koszyka
-                        </button>
+                <div class="card fade-in">
+                    <div class="card-image">
+                        <i class="fas fa-globe"></i>
                     </div>
+                    <h3>Strona WWW</h3>
+                    <p>Profesjonalna strona portfolio lub sklep internetowy z panelem administracyjnym</p>
+                    <div class="card-price">90 zł</div>
+                    <button class="buy-btn" onclick="buyService('www', 90, 'Strona WWW')">
+                        <i class="fas fa-heart"></i> Wesprzyj 90 zł
+                    </button>
                 </div>
 
                 <!-- Montaż wideo -->
-                <div class="card" data-product="video" data-price="0.6" data-name="Montaż wideo" data-desc="Profesjonalny montaż video">
-                    <img src="images/video.png" alt="Montaż wideo" onerror="this.src='images/default.png'">
-                    <div class="card-content">
-                        <h3>Montaż wideo</h3>
-                        <p>1 sek = 0,01 zł (minimalnie 1 minuta)</p>
-                        <div class="card-price">od 0,60 zł</div>
-                        <button class="add-to-cart-btn" onclick="addToCart(this)">
-                            <i class="fas fa-cart-plus"></i> Dodaj do koszyka
-                        </button>
+                <div class="card fade-in">
+                    <div class="card-image">
+                        <i class="fas fa-video"></i>
                     </div>
+                    <h3>Montaż wideo</h3>
+                    <p>Profesjonalny montaż video (1 sekunda = 0,01 zł, minimalnie 1 minuta)</p>
+                    <div class="card-price">od 0,60 zł</div>
+                    <button class="buy-btn" onclick="buyService('video', 60, 'Montaż wideo (1 min)')">
+                        <i class="fas fa-heart"></i> Wesprzyj 60 zł
+                    </button>
                 </div>
+            </div>
+
+            <!-- Custom Donation -->
+            <div class="custom-donation fade-in">
+                <h3>💰 Własna kwota</h3>
+                <p>Chcesz wesprzeć inną kwotą? Wpisz poniżej:</p>
+                
+                <div class="amount-input">
+                    <input type="number" id="customAmount" placeholder="np. 150" min="5" max="10000">
+                    <span class="currency">zł</span>
+                </div>
+                
+                <small style="color: #888; display: block; margin: 0.5rem 0 1.5rem;">Minimalna kwota: 5 zł</small>
+                
+                <button class="custom-btn" onclick="buyCustomService()">
+                    <i class="fas fa-gift"></i> Wesprzyj własną kwotą
+                </button>
             </div>
         </section>
     </main>
 
-    <!-- Cart Sidebar -->
-    <div class="cart-overlay" id="cartOverlay"></div>
-    <div class="cart-sidebar" id="cartSidebar">
-        <div class="cart-header">
-            <h3><i class="fas fa-shopping-cart"></i> Twój Koszyk</h3>
-            <button class="close-cart" onclick="closeCart()">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        
-        <div class="cart-items" id="cartItemsContainer">
-            <div class="empty-cart" id="emptyCartMessage">
-                <i class="fas fa-shopping-cart"></i>
-                <h4>Koszyk jest pusty</h4>
-                <p>Dodaj produkty z oferty!</p>
-            </div>
-        </div>
-        
-        <div class="cart-footer">
-            <div class="cart-summary">
-                <span>Łącznie:</span>
-                <span class="cart-total" id="cartTotal">0.00 zł</span>
-            </div>
-            
-            <div class="cart-actions">
-                <button class="checkout-btn" onclick="goToCheckout()">
-                    <i class="fas fa-lock"></i> Przejdź do płatności
-                </button>
-                <button class="clear-cart-btn" onclick="clearCart()">
-                    <i class="fas fa-trash"></i> Wyczyść koszyk
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Chat -->
-    <button class="chat-toggle" id="chatToggle">
-        <i class="fas fa-comments"></i>
-    </button>
-    
-    <div class="chat-box" id="chatBox">
-        <div class="chat-header">
-            <span>Chat z Vorexan</span>
-            <button onclick="toggleChat()" style="background:none;border:none;color:white;">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <div class="chat-messages" id="chatMessages"></div>
-        <div class="chat-input">
-            <input type="text" id="chatInput" placeholder="Napisz wiadomość...">
-            <button class="btn btn-primary" onclick="sendMessage()">
-                <i class="fas fa-paper-plane"></i>
-            </button>
-        </div>
-    </div>
-
     <!-- Footer -->
     <footer>
         <div class="container">
-            <div class="footer-content">
-                <div class="footer-logo">
-                    <h3>Vorexan</h3>
-                </div>
-                <div class="footer-links">
-                    <a href="#" onclick="showTerms()">Regulamin</a>
-                    <a href="#" onclick="showPrivacy()">Polityka prywatności</a>
-                    <a href="mailto:contact@vorexan.pl">Kontakt</a>
-                </div>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-discord"></i></a>
-                    <a href="#"><i class="fab fa-github"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
-                </div>
+            <div class="footer-logo">Vorexan</div>
+            <p>Game Development & Programming Services</p>
+            
+            <div class="social-links">
+                <a href="https://discord.com/users/TWOJE_ID_DISCORD" title="Discord" target="_blank">
+                    <i class="fab fa-discord"></i>
+                </a>
+                <a href="https://github.com/vorexan" title="GitHub" target="_blank">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://twitter.com/vorexan" title="Twitter" target="_blank">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="https://youtube.com/@vorexan" title="YouTube" target="_blank">
+                    <i class="fab fa-youtube"></i>
+                </a>
             </div>
-            <p style="margin-top: 2rem; color: #aaa;">© 2024 Vorexan. Wszystkie prawa zastrzeżone.</p>
+            
+            <p class="copyright">
+                © 2024 Vorexan. Wszystkie prawa zastrzeżone.<br>
+                Płatności obsługiwane przez <a href="https://tipply.pl/@vorexanstore" style="color: #667eea;">Tipply.pl</a>
+            </p>
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <!-- Modal with Instructions -->
+    <div class="modal" id="instructionsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <h2>📋 Instrukcja po wpłacie</h2>
+            </div>
+            
+            <div class="modal-instructions">
+                <ol>
+                    <li><strong>Zostałeś przekierowany na Tipply</strong> - dokonaj wpłaty wybranej kwoty</li>
+                    <li><strong>Napisz na Discord</strong> do <code>vorexan</code> z informacją:</li>
+                    <ul style="margin: 0.5rem 0 0.5rem 1.5rem; color: #b0b0b0;">
+                        <li>Usługa: <span id="modalServiceName"></span></li>
+                        <li>Kwota: <span id="modalAmount"></span> zł</li>
+                        <li>Twój nick z Tipply (jeśli inny)</li>
+                    </ul>
+                    <li><strong>Otrzymasz dostęp do usługi</strong> w ciągu 1-24 godzin</li>
+                </ol>
+            </div>
+            
+            <div class="modal-buttons">
+                <a href="https://tipply.pl/@vorexanstore" class="modal-btn modal-btn-primary" target="_blank" id="modalTipplyLink">
+                    <i class="fas fa-external-link-alt"></i> Przejdź do Tipply
+                </a>
+                <button class="modal-btn modal-btn-secondary" onclick="closeModal()">
+                    <i class="fas fa-times"></i> Zamknij
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Konfiguracja
+        const TIPPLY_URL = "https://tipply.pl/@vorexanstore";
+        const DISCORD_URL = "https://discord.com/users/TWOJE_ID_DISCORD";
+        
+        // Funkcje
+        function buyService(service, amount, name) {
+            // Zapisz wybór w localStorage
+            const donationData = {
+                service: service,
+                amount: amount,
+                name: name,
+                timestamp: new Date().toISOString(),
+                url: TIPPLY_URL
+            };
+            
+            localStorage.setItem('lastDonation', JSON.stringify(donationData));
+            localStorage.setItem('donationService', service);
+            localStorage.setItem('donationAmount', amount);
+            localStorage.setItem('donationName', name);
+            
+            // Pokaż modal z instrukcjami
+            showInstructions(amount, name);
+            
+            // Opcjonalnie: wyślij tracking do API
+            sendTracking(service, amount, name);
+        }
+        
+        function buyCustomService() {
+            const customInput = document.getElementById('customAmount');
+            const amount = parseInt(customInput.value);
+            
+            if (!amount || amount < 5) {
+                alert('❌ Proszę podać kwotę minimum 5 zł');
+                customInput.focus();
+                return;
+            }
+            
+            if (amount > 10000) {
+                alert('⚠️ Maksymalna kwota to 10,000 zł');
+                return;
+            }
+            
+            const name = `Własna darowizna (${amount} zł)`;
+            
+            // Zapisz w localStorage
+            const donationData = {
+                service: 'custom',
+                amount: amount,
+                name: name,
+                timestamp: new Date().toISOString(),
+                url: TIPPLY_URL
+            };
+            
+            localStorage.setItem('lastDonation', JSON.stringify(donationData));
+            localStorage.setItem('donationService', 'custom');
+            localStorage.setItem('donationAmount', amount);
+            localStorage.setItem('donationName', name);
+            
+            // Pokaż modal
+            showInstructions(amount, name);
+            
+            // Wyślij tracking
+            sendTracking('custom', amount, 'Custom Donation');
+            
+            // Wyczyść pole
+            customInput.value = '';
+        }
+        
+        function showInstructions(amount, serviceName) {
+            // Ustaw dane w modal
+            document.getElementById('modalServiceName').textContent = serviceName;
+            document.getElementById('modalAmount').textContent = amount;
+            
+            // Ustaw link Tipply z amount w URL (jeśli Tipply to wspiera)
+            const tipplyLink = document.getElementById('modalTipplyLink');
+            tipplyLink.href = TIPPLY_URL; // Możesz dodać ?amount= jeśli Tipply to obsługuje
+            
+            // Pokaż modal
+            document.getElementById('instructionsModal').classList.add('show');
+        }
+        
+        function closeModal() {
+            document.getElementById('instructionsModal').classList.remove('show');
+        }
+        
+        async function sendTracking(service, amount, name) {
+            try {
+                // Wyślij do Cloudflare Functions (opcjonalnie)
+                await fetch('/api/track-donation', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        service: service,
+                        amount: amount,
+                        name: name,
+                        timestamp: new Date().toISOString(),
+                        referrer: document.referrer,
+                        userAgent: navigator.userAgent
+                    })
+                });
+            } catch (error) {
+                console.log('Tracking error:', error);
+            }
+        }
+        
+        // Inicjalizacja strony
+        document.addEventListener('DOMContentLoaded', function() {
+            // Sprawdź czy użytkownik wrócił z Tipply
+            const lastDonation = localStorage.getItem('lastDonation');
+            if (lastDonation) {
+                const donation = JSON.parse(lastDonation);
+                const now = new Date();
+                const donationTime = new Date(donation.timestamp);
+                const hoursDiff = (now - donationTime) / (1000 * 60 * 60);
+                
+                // Jeśli donation była w ciągu ostatnich 2 godzin
+                if (hoursDiff < 2) {
+                    console.log('Witaj z powrotem! Ostatnio wybrana:', donation.name);
+                    
+                    // Możesz pokazać welcome back message
+                    setTimeout(() => {
+                        if (confirm(`Witaj z powrotem! Ostatnio wybrałeś: ${donation.name} za ${donation.amount} zł.\n\nCzy chcesz przejść do Discorda aby potwierdzić?`)) {
+                            window.open(DISCORD_URL, '_blank');
+                        }
+                    }, 1000);
+                }
+            }
+            
+            // Zamknij modal przy kliknięciu w tło
+            document.getElementById('instructionsModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+            
+            // Zamknij modal przy ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+            
+            // Animacje
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in');
+                    }
+                });
+            }, observerOptions);
+            
+            // Obserwuj wszystkie karty
+            document.querySelectorAll('.card').forEach(card => {
+                observer.observe(card);
+            });
+        });
+        
+        // Focus na custom amount input
+        document.getElementById('customAmount').addEventListener('focus', function() {
+            this.select();
+        });
+    </script>
 </body>
 </html>
