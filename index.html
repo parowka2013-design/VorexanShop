@@ -1,83 +1,72 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vorexan Shop</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Vorexan</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
 <header class="hero">
-  <h1>Vorexan Shop</h1>
-  <p>Game Dev • Minecraft Dev • Projekty</p>
-  <div id="accountSection"></div>
-  <button onclick="toggleCart()">🛒 Koszyk</button>
+  <h1>Vorexan</h1>
+  <p>Game Dev • Programista • Minecraft Dev</p>
+
+  <div class="top-buttons">
+    <button onclick="goAccount()">Konto</button>
+  </div>
 </header>
 
-<main>
-  <!-- Logowanie / Rejestracja -->
-  <section id="auth">
-    <h2>🔐 Logowanie / Rejestracja</h2>
-    <input id="authEmail" type="email" placeholder="Email">
-    <input id="authPass" type="password" placeholder="Hasło">
-    <input id="authName" type="text" placeholder="Nazwa użytkownika (tylko przy rejestracji)">
-    <div>
-      <button onclick="login()">Zaloguj</button>
-      <button onclick="register()">Zarejestruj</button>
-    </div>
-    <p id="authStatus"></p>
-  </section>
+<section class="offers">
+  <h2>📦 Oferta</h2>
 
-  <!-- Produkty dla użytkownika -->
-  <section id="productsSection" style="display:none;">
-    <h2>🛍️ Oferta</h2>
-    <div class="products" id="productsContainer">
-      <!-- Produkty wczytane z Firebase -->
-    </div>
-  </section>
-
-  <!-- Panel admina -->
-  <section id="adminSection" style="display:none;">
-    <h2>Panel Admina</h2>
-
-    <div id="adminButtons">
-      <button onclick="showProductsAdmin()">Produkty</button>
-      <button onclick="showOrdersAdmin()">Zamówienia</button>
-      <button onclick="logout()">Wyloguj się</button>
+  <div class="cards">
+    <div class="card">
+      <img src="img/plugin.png">
+      <h3>Plugin Minecraft</h3>
+      <p>Custom plugin (GUI, prace)</p>
+      <b>50 zł</b>
     </div>
 
-    <!-- Produkty admin -->
-    <table id="adminProductsTable">
-      <tr><th>Nazwa</th><th>Cena</th><th>Zdjęcie</th></tr>
-    </table>
+    <div class="card">
+      <img src="img/skript.png">
+      <h3>Skrypty Skript</h3>
+      <p>Rangi, eventy</p>
+      <b>30 zł</b>
+    </div>
 
-    <!-- Zamówienia admin -->
-    <table id="adminOrdersTable" style="display:none;">
-      <tr><th>Data</th><th>Użytkownik</th><th>Produkty</th></tr>
-    </table>
-  </section>
-</main>
+    <div class="card">
+      <img src="img/www.png">
+      <h3>Strona WWW</h3>
+      <p>Portfolio / sklep</p>
+      <b>90 zł</b>
+    </div>
 
-<!-- Koszyk -->
-<div id="cart">
-  <h2>Koszyk</h2>
-  <div id="cartItems"></div>
-  <p><b>Suma: <span id="total">0</span> zł</b></p>
-  <button onclick="checkout()">Zamów</button>
-  <button onclick="toggleCart()">Zamknij</button>
+    <div class="card">
+      <img src="img/video.png">
+      <h3>Montaż wideo</h3>
+      <p>1 sek = 0,01 zł (min. 1 min)</p>
+      <b>od 0,60 zł</b>
+    </div>
+  </div>
+</section>
+
+<!-- CHAT -->
+<button id="chatToggle">💬</button>
+
+<div id="chatBox" class="hidden">
+  <div class="chat-header">
+    <span>Chat z Vorexan</span>
+    <button onclick="toggleChat()">✕</button>
+  </div>
+
+  <div id="chatMessages"></div>
+
+  <div class="chat-input">
+    <input id="chatInput" placeholder="Napisz wiadomość..." />
+    <button onclick="sendMessage()">Wyślij</button>
+  </div>
 </div>
 
 <script type="module" src="script.js"></script>
 </body>
 </html>
-<link rel="stylesheet" href="chat.css">
-
-<div class="chat-box" id="chatBox" style="display:none">
-  <div class="chat-header">Chat z administracją</div>
-  <div class="chat-messages" id="messages"></div>
-  <div class="chat-input">
-    <input id="msgInput" placeholder="Napisz wiadomość...">
-    <button onclick="sendMsg()">➤</button>
-  </div>
-</div>
