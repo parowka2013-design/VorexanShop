@@ -1,49 +1,56 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel Sprzedawcy</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Panel Sprzedawcy | Vorexan</title>
+  <link rel="stylesheet" href="seller.css">
 </head>
 <body>
 
-<div class="seller-container">
+<!-- LOGOWANIE -->
+<div id="loginView" class="center">
+  <h1>🔐 Panel sprzedawcy</h1>
 
-  <!-- MENU BOCZNE -->
-  <aside class="seller-sidebar">
-    <h2>Panel Sprzedawcy</h2>
-    <button onclick="showSection('orders')">📝 Zamówienia</button>
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Hasło">
+
+  <button onclick="login()">Zaloguj</button>
+  <p id="loginError"></p>
+</div>
+
+<!-- PANEL -->
+<div id="panelView" class="hidden">
+
+  <aside class="sidebar">
+    <h2>Vorexan</h2>
+    <button onclick="showSection('orders')">📦 Zamówienia</button>
     <button onclick="showSection('chat')">💬 Chat</button>
-    <button onclick="showSection('settings')">⚙ Ustawienia</button>
-    <button onclick="logoutSeller()">🚪 Wyloguj</button>
+    <button onclick="logout()">🚪 Wyloguj</button>
   </aside>
 
-  <!-- GŁÓWNA SEKCJA -->
-  <main class="seller-main">
-    <section id="ordersSection" class="seller-section">
-      <h2>Lista Zamówień</h2>
+  <main class="content">
+
+    <!-- ZAMÓWIENIA -->
+    <section id="ordersSection">
+      <h1>📦 Zamówienia</h1>
       <div id="ordersList"></div>
     </section>
 
-    <section id="chatSection" class="seller-section" style="display:none;">
-      <h2>Chat z klientami</h2>
-      <div id="sellerChatList"></div>
-      <div id="sellerChatWindow" class="chat-window"></div>
-      <div class="chat-input">
-        <input id="sellerChatMessage" placeholder="Napisz wiadomość...">
-        <button onclick="sendSellerMessage()">Wyślij</button>
+    <!-- CHAT -->
+    <section id="chatSection" class="hidden">
+      <h1>💬 Chat z klientami</h1>
+
+      <div id="chatMessages"></div>
+
+      <div class="chatInput">
+        <input id="chatInput" placeholder="Napisz wiadomość...">
+        <button onclick="sendMessage()">Wyślij</button>
       </div>
     </section>
 
-    <section id="settingsSection" class="seller-section" style="display:none;">
-      <h2>Ustawienia konta sprzedawcy</h2>
-      <input id="newSellerPass" type="password" placeholder="Nowe hasło">
-      <button onclick="changeSellerPassword()">Zmień hasło</button>
-    </section>
   </main>
 </div>
 
-<script src="seller.js"></script>
+<script type="module" src="seller.js"></script>
 </body>
 </html>
