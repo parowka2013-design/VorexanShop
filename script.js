@@ -85,4 +85,40 @@ app.post('/webhook', express.raw({type: 'application/json'}),
     // Obsługa eventu
     res.json({received: true})
 })
+// Payment functionality - add to your existing script.js
+
+// Obsługa kliknięcia w produkty
+document.addEventListener('DOMContentLoaded', function() {
+    // Jeśli istnieją karty produktów, dodaj obsługę kliknięcia
+    const productCards = document.querySelectorAll('.card');
+    
+    productCards.forEach(card => {
+        card.addEventListener('click', function() {
+            // Pobierz dane produktu
+            const productName = this.querySelector('h3').textContent;
+            const productPrice = parseInt(this.querySelector('b').textContent.replace(' zł', '').replace('od ', ''));
+            const productDesc = this.querySelector('p').textContent;
+            const productImg = this.querySelector('img').src.split('/').pop();
+            
+            // Przekieruj do strony płatności z parametrami
+            window.location.href = `/payment.html?product=${encodeURIComponent(productName.toLowerCase())}&price=${productPrice}&name=${encodeURIComponent(productName)}&desc=${encodeURIComponent(productDesc)}&img=${productImg}`;
+        });
+    });
+});
+
+// Funkcja do obsługi zakupu z poziomu Twojego sklepu
+function buyProduct(productName, price, description, image) {
+    const params = new URLSearchParams({
+        product: productName.toLowerCase().replace(/ /g, '-'),
+        price: price,
+        name: productName,
+        desc: description,
+        img: image || 'img/default.png'
+    });
+    
+    window.location.href = `/payment.html?${params.toString()}`;
+}
+
+// Przykład użycia w Twoim index.html - dodaj do kart:
+// onclick="buyProduct('Plugin Minecraft', 50, 'Custom plugin (GUI, prace)', 'img/plugin.png')"
 
