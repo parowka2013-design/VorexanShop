@@ -1,20 +1,17 @@
 {
-  "name": "vorexan-shop",
+  "name": "vorexan-tipply",
   "version": "1.0.0",
-  "description": "Sklep e-commerce Vorexan na Cloudflare Pages",
+  "description": "Strona darowizn Vorexan z integracją Tipply.pl",
   "main": "public/index.html",
   "scripts": {
-    "dev": "wrangler pages dev public --compatibility-date=2024-01-01",
-    "deploy": "wrangler pages deploy public --project-name=vorexan-shop"
+    "dev": "wrangler pages dev public --compatibility-date=2024-12-01",
+    "deploy": "wrangler pages deploy public --project-name=vorexan-tipply"
   },
-  "dependencies": {
-    "stripe": "^14.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "wrangler": "^3.0.0",
-    "@cloudflare/workers-types": "^4.0.0"
+    "wrangler": "^3.0.0"
   },
-  "keywords": ["e-commerce", "cloudflare", "stripe", "shop"],
+  "keywords": ["tipply", "donations", "vorexan", "cloudflare"],
   "author": "Vorexan",
   "license": "MIT"
 }
