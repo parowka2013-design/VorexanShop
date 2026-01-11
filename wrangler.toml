@@ -1,0 +1,7 @@
+name = "vorexan-shop-worker"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+routes = [
+  { pattern = "vorexanshop.pages.dev//api/*", zone_name = "vorexanshop.pages.dev/" }
+]
