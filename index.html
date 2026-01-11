@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vorexan Shop</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="hero">
+  <h1>Vorexan Shop</h1>
+  <p>Game Dev • Minecraft Dev • Projekty</p>
+  <div id="accountSection"></div>
+  <button onclick="toggleCart()">🛒 Koszyk</button>
+</header>
+
+<main>
+  <!-- Logowanie / Rejestracja -->
+  <section id="auth">
+    <h2>🔐 Logowanie / Rejestracja</h2>
+    <input id="authEmail" type="email" placeholder="Email">
+    <input id="authPass" type="password" placeholder="Hasło">
+    <input id="authName" type="text" placeholder="Nazwa użytkownika (tylko przy rejestracji)">
+    <div>
+      <button onclick="login()">Zaloguj</button>
+      <button onclick="register()">Zarejestruj</button>
+    </div>
+    <p id="authStatus"></p>
+  </section>
+
+  <!-- Produkty dla użytkownika -->
+  <section id="productsSection" style="display:none;">
+    <h2>🛍️ Oferta</h2>
+    <div class="products" id="productsContainer">
+      <!-- Produkty wczytane z Firebase -->
+    </div>
+  </section>
+
+  <!-- Panel admina -->
+  <section id="adminSection" style="display:none;">
+    <h2>Panel Admina</h2>
+
+    <div id="adminButtons">
+      <button onclick="showProductsAdmin()">Produkty</button>
+      <button onclick="showOrdersAdmin()">Zamówienia</button>
+      <button onclick="logout()">Wyloguj się</button>
+    </div>
+
+    <!-- Produkty admin -->
+    <table id="adminProductsTable">
+      <tr><th>Nazwa</th><th>Cena</th><th>Zdjęcie</th></tr>
+    </table>
+
+    <!-- Zamówienia admin -->
+    <table id="adminOrdersTable" style="display:none;">
+      <tr><th>Data</th><th>Użytkownik</th><th>Produkty</th></tr>
+    </table>
+  </section>
+</main>
+
+<!-- Koszyk -->
+<div id="cart">
+  <h2>Koszyk</h2>
+  <div id="cartItems"></div>
+  <p><b>Suma: <span id="total">0</span> zł</b></p>
+  <button onclick="checkout()">Zamów</button>
+  <button onclick="toggleCart()">Zamknij</button>
+</div>
+
+<script type="module" src="script.js"></script>
+</body>
+</html>
+<link rel="stylesheet" href="chat.css">
+
+<div class="chat-box" id="chatBox" style="display:none">
+  <div class="chat-header">Chat z administracją</div>
+  <div class="chat-messages" id="messages"></div>
+  <div class="chat-input">
+    <input id="msgInput" placeholder="Napisz wiadomość...">
+    <button onclick="sendMsg()">➤</button>
+  </div>
+</div>
